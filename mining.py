@@ -397,7 +397,7 @@ def find_action_sequence(s0, s1):
         
         
         
-        
+        # mat is a homo
         
     
     
