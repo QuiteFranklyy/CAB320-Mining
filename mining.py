@@ -393,8 +393,11 @@ def find_action_sequence(s0, s1):
     # approach: among all columns for which s0 < s1, pick the column loc
     # with the smallest s0[loc]
     raise NotImplementedError
-        
-        
+    
+def my_team():    
+     '''Return the list of the team members of this assignment submission 
+     as a list    of triplet of the form (student_number, first_name, last_name)''' 
+     return [ (10272224, 'Michael', 'Novak'), (9952438, 'Sebastian', 'Young'), (1234569, 'Mathew', 'Haywood') ]
         
         
         # mat is a homo
