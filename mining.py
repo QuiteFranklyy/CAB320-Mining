@@ -400,7 +400,7 @@ def my_team():
      return [ (10272224, 'Michael', 'Novak'), (9952438, 'Sebastian', 'Young'), (1234569, 'Mathew', 'Haywood') ]
         
         
-        # mat is a homo
+        # mat is a homo-sapien
         
     
     
