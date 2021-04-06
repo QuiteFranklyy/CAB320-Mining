@@ -345,6 +345,32 @@ class Mine(search.Problem):
                 return True
             else:
                 return False
+        
+        # 3D implementation
+        # orthogonal directions
+        rotated_state = np.rot90(state)
+        dif1 = np.absolute(np.diff(state))
+        if (self.dig_tolerance + 1) in dif1:
+            return True
+        
+        dif2 = np.absolute(np.diff(rotated_state))
+        if (self.dig_tolerance + 1) in dif2:
+            return True
+        
+        for x in range(-self.y+1, self.x, 1):
+            diag_slice = np.diagonal(state,offset=x)
+            dif3 = np.absolute(np.diff(diag_slice))
+            if (self.dig_tolerance + 1) in dif3:
+                return True
+            
+        for x in range(-self.x+1, self.y, 1):
+            diag_slice = np.diagonal(rotated_state,offset=x)
+            dif4 = np.absolute(np.diff(diag_slice))
+            if (self.dig_tolerance + 1) in dif4:
+                return True
+        
+        return False
+            
            
 
 
