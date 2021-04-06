@@ -12,10 +12,10 @@ Here is the console output
     = = = = = = = = = = = = = = = = = = = = 
     Mine of depth 4
     Plane x,z view
-    [[-0.814  0.559  0.175  0.212 -1.231]
-     [ 0.637 -0.234 -0.284  0.088  1.558]
-     [ 1.824 -0.366  0.026  0.304 -0.467]
-     [-0.563  0.07  -0.316  0.604 -0.371]]
+    [[-0.814,  0.559,  0.175,  0.212, -1.231],
+     [ 0.637, -0.234, -0.284,  0.088,  1.558],
+     [ 1.824, -0.366,  0.026,  0.304, -0.467],
+     [-0.563,  0.07,  -0.316,  0.604, -0.371]]
     -------------- DP computations -------------- 
     Cache DP function before first call :  CacheInfo(hits=0, misses=0, maxsize=None, currsize=0)
     Cache DP function after all calls :   CacheInfo(hits=432, misses=259, maxsize=None, currsize=259)
