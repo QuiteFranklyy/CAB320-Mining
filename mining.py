@@ -339,7 +339,7 @@ class Mine(search.Problem):
         # 2D implementation
         if self.len_y == 0:
             # create an array with all of the differences in height in adjacent columns
-            difference_array = np.diff(state)
+            difference_array = np.absolute(np.diff(state))
             # if there exists a difference that is greater than the dig tolerance
             if (self.dig_tolerance + 1) in difference_array:
                 return True
