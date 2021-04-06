@@ -164,10 +164,25 @@ class Mine(search.Problem):
         
         self.underground = underground
         # self.underground  should be considered as a 'read-only' variable!
+        assert dig_tolerance > 0
         self.dig_tolerance = dig_tolerance
-        assert underground.ndim in (2,3)
+        dimensions = underground.ndim
+        assert dimensions in (2,3)
+        shape = underground.shape
+        if dimensions == 3:
+            self.len_x = shape[2]
+            self.len_y = shape[1]
+            self.len_z = shape[0]
+            self.initial = tuple(map(tuple,np.zeros(tuple((self.len_x,self.len_y)))))
+            
+        else:
+            self.len_x = shape[1]
+            self.len_z = shape[0]
+            self.initial = tuple(np.zeros((self.len_x,), dtype=int))
         
-        raise NotImplementedError
+        
+        self.cumsum_mine = underground.sum()
+
 
 
     def surface_neigbhours(self, loc):
@@ -221,6 +236,8 @@ class Mine(search.Problem):
 
         '''        
         state = np.array(state)
+        L = []
+        
 
         raise NotImplementedError
                 
@@ -409,6 +426,20 @@ def my_team():
         
         # mat is a homo-sapien
         
-    
-    
+if __name__ == "__main__":
+    underground = a = np.arange(27).reshape(3,3,3)
+    m = Mine(underground)
+    print("underground:")
+    print(underground)
+    print("cumsum:")
+    print(m.cumsum_mine)
+    print("dig tolerance:")
+    print(m.dig_tolerance)
+    print("initial:")
+    print(m.initial)
+    print("len x y z:")
+    print(m.len_x)
+    print(m.len_y)
+    print(m.len_z)
+
     
