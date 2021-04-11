@@ -329,15 +329,15 @@ class Mine(search.Problem):
         2D
         '''
         if state.ndim == 1:
-            where_has_been_dug = np.where(state > 0)
-            where_has = where_has_been_dug[0]
+            been_dug = np.where(state > 0)
+            x = been_dug[0]
             
             print()
-            print(sum(self.underground[:state[where_has[0]], where_has[0]]))
+            print(sum(self.underground[:state[x[0]], x[0]]))
             
             total2D = 0
-            for i in range(len(where_has)):
-                col_sum = sum(self.underground[:state[where_has[i]], where_has[i]])
+            for i in range(len(x)):
+                col_sum = sum(self.underground[:state[x[i]], x[i]])
                 total2D += col_sum 
                 
             print(total2D)
@@ -347,13 +347,13 @@ class Mine(search.Problem):
         3D
         '''
         if state.ndim == 2 :
-            where_has_been_dug = np.where(state > 0)
-            x = where_has_been_dug[0]
-            y = where_has_been_dug[1]
+            been_dug = np.where(state > 0)
+            x = been_dug[0]
+            y = been_dug[1]
             
             depth = state[x,y]
             
-            print(where_has_been_dug)
+            print(been_dug)
             print(x)
             print(y)
             print(depth)
