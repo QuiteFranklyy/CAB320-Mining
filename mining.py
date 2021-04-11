@@ -234,12 +234,30 @@ class Mine(search.Problem):
         -------
         a generator of valid actions
 
-        '''        
-        state = np.array(state)
-        L = []
+        '''       
+        # 2D Generator
+        if (self.y == 0):
+           def mygen(state):
+                for x in range(self.len_x):
+                    new_state = np.array(state)
+                    new_state[x] = new_state[x] + 1
+                    if (not is_dangerous(new_state)):
+                        yield (x)
+           
+        # 3D Generator
+        else:
+            def mygen(state):
+                for x in range(self.len_x):
+                    for y in range(self.len_y):
+                        new_state = np.array(state)
+                        new_state[x,y] = new_state[x,y] + 1
+                        if (not is_dangerous(new_state)):
+                            yield (x,y)
         
-
-        raise NotImplementedError
+        test = list(mygen(state))
+        print(test)
+                        
+        return mygen(state)
                 
   
     def result(self, state, action):
@@ -493,8 +511,10 @@ def my_team():
         # mat is a homo-sapien
         
 if __name__ == "__main__":
-    underground = a = np.arange(27).reshape(3,3,3)
-    m = Mine(underground)
+    # underground = a = np.arange(27).reshape(3,3,3)
+    # m = Mine(underground)
+    underground = a =[[[0,0,0], [0,1,0], [0,0,0]], [[0,0,0], [0,1,0], [0,0,0]], [[0,0,0], [0,1,0], [0,0,0]]]
+    m = Mine(np.array(underground))
     print("underground:")
     print(underground)
     print("cumsum:")
@@ -507,5 +527,7 @@ if __name__ == "__main__":
     print(m.len_x)
     print(m.len_y)
     print(m.len_z)
+    
+    sol_ts = search.breadth_first_tree_search(m)
 
     
