@@ -323,9 +323,51 @@ class Mine(search.Problem):
         
         No loops needed in the implementation!        
         '''
-        # convert to np.array in order to use tuple addressing
-        # state[loc]   where loc is a tuple
-        raise NotImplementedError
+        state = np.array(state) # convert to np.array in order to use tuple addressing
+                                # state[loc]   where loc is a tuple
+        '''
+        2D
+        '''
+        if state.ndim == 1:
+            where_has_been_dug = np.where(state > 0)
+            where_has = where_has_been_dug[0]
+            
+            print()
+            print(sum(self.underground[:state[where_has[0]], where_has[0]]))
+            
+            total2D = 0
+            for i in range(len(where_has)):
+                col_sum = sum(self.underground[:state[where_has[i]], where_has[i]])
+                total2D += col_sum 
+                
+            print(total2D)
+            return total2D
+        
+        '''
+        3D
+        '''
+        if state.ndim == 2 :
+            where_has_been_dug = np.where(state > 0)
+            x = where_has_been_dug[0]
+            y = where_has_been_dug[1]
+            
+            depth = state[x,y]
+            
+            print(where_has_been_dug)
+            print(x)
+            print(y)
+            print(depth)
+            
+            total3D = 0
+            for i in range(len(x)):
+                col_sum3D = sum(self.underground[:state[y[i], x[i]], y[i], x[i]])
+                total3D += col_sum3D
+                print(col_sum3D)
+                
+            print(total3D)
+            return total3D
+            
+        
 
 
     def is_dangerous(self, state):
