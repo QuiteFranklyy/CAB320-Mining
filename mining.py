@@ -182,6 +182,10 @@ class Mine(search.Problem):
         
         
         self.cumsum_mine = underground.sum()
+        
+        self.goal = None
+        
+        self.num_actions = 0
 
 
 
@@ -236,12 +240,12 @@ class Mine(search.Problem):
 
         '''       
         # 2D Generator
-        if (self.y == 0):
+        if (self.len_y == 0):
            def mygen(state):
                 for x in range(self.len_x):
                     new_state = np.array(state)
                     new_state[x] = new_state[x] + 1
-                    if (not is_dangerous(new_state)):
+                    if (not self.is_dangerous(new_state)):
                         yield (x)
            
         # 3D Generator
@@ -251,11 +255,17 @@ class Mine(search.Problem):
                     for y in range(self.len_y):
                         new_state = np.array(state)
                         new_state[x,y] = new_state[x,y] + 1
-                        if (not is_dangerous(new_state)):
+                        if (not self.is_dangerous(new_state)):
                             yield (x,y)
         
-        test = list(mygen(state))
-        print(test)
+        # uncomment the following to see the actions working
+        # print("Old state", state)
+        # test = list(mygen(state))
+        # print("Actions",test)
+        # self.num_actions += 1
+        # if (self.num_actions == 5):
+        #     quit
+        
                         
         return mygen(state)
                 
@@ -414,7 +424,7 @@ class Mine(search.Problem):
         
         # orthoganol left
         dif2 = np.absolute(state[:,:-1] - state[:,1:])
-        if (self.dig_tolerace + 1) in dif2:
+        if (self.dig_tolerance + 1) in dif2:
             return True
         
         # diagonal left down
