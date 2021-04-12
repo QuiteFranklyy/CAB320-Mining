@@ -239,6 +239,7 @@ class Mine(search.Problem):
         a generator of valid actions
 
         '''       
+        state = np.array(state, dtype = "int")
         # 2D Generator
         if (self.len_y == 0):
            def mygen(state):
@@ -259,12 +260,12 @@ class Mine(search.Problem):
                             yield (x,y)
         
         # uncomment the following to see the actions working
-        # print("Old state", state)
-        # test = list(mygen(state))
-        # print("Actions",test)
-        # self.num_actions += 1
-        # if (self.num_actions == 5):
-        #     quit
+        print("State:\n", state)
+        test = list(mygen(state))
+        print("Actions:\n",np.array(test, dtype="int"),"\n")
+        self.num_actions += 1
+        if (self.num_actions == 5):
+            quit()
         
                         
         return mygen(state)
