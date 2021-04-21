@@ -358,43 +358,37 @@ class Mine(search.Problem):
         2D
         '''
         if state.ndim == 1:
-            been_dug = np.where(state > 0)
-            x = been_dug[0]
+            #Find the x, z coordinates
+            where = np.where(state>0)
+            x = where[0]
             
-            print()
-            print(sum(self.underground[:state[x[0]], x[0]]))
+            # Calculate the cumalative sum
+            cumsum = np.cumsum(self.underground, axis=1)
             
-            total2D = 0
-            for i in range(len(x)):
-                col_sum = sum(self.underground[:state[x[i]], x[i]])
-                total2D += col_sum 
-                
-            print(total2D)
-            return total2D
-        
+            # Pad out the mine for indexing
+            padded_sum = np.insert(cumsum,0,0,axis=1)
+            
+            # Return Payoff
+            return sum(padded_sum[x, state])
+                  
         '''
         3D
         '''
-        if state.ndim == 2 :
-            been_dug = np.where(state > 0)
-            x = been_dug[0]
-            y = been_dug[1]
+        if state.ndim == 2:
+            # Find the x, y, z coordinates
+            where = np.where(state>0)
+            x = np.array(where[0])
+            y = np.array(where[1])         
+            z = state[x,y]
             
-            depth = state[x,y]
+            # Do the cumalative sum
+            cumsum = np.cumsum(self.underground, axis=2)
             
-            print(been_dug)
-            print(x)
-            print(y)
-            print(depth)
+            # Pad out the mine for indexing
+            padded_sum = np.insert(cumsum,0,0,axis=2)
             
-            total3D = 0
-            for i in range(len(x)):
-                col_sum3D = sum(self.underground[:state[y[i], x[i]], y[i], x[i]])
-                total3D += col_sum3D
-                print(col_sum3D)
-                
-            print(total3D)
-            return total3D
+            # Return payoff
+            return sum(padded_sum[x, y, z])
             
         
 
