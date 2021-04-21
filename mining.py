@@ -488,7 +488,7 @@ def search_dp_dig_plan(mine):
     initial_state = mine.initial
     
     t0 = time.time()
-    # @lru_cache(maxsize=None)
+    @lru_cache(maxsize=None)
     def search_recs(state):
         # print("state")
         # print(state)
@@ -499,7 +499,7 @@ def search_dp_dig_plan(mine):
         
         
         for action in a:
-            mine.actionList.append(action)
+            # mine.actionList.append(action)
             s2 = mine.result(state, action)
             mine.counter += 1
             search_recs(s2)
@@ -508,9 +508,10 @@ def search_dp_dig_plan(mine):
         if (payoff > mine.biggestPayoff):
             mine.biggestPayoff = payoff
             mine.bfs = state
-            mine.bestActionList = mine.actionList
+            # print(mine.initial,state)
+            mine.bestActionList = find_action_sequence(mine.initial, state)
             
-        del mine.actionList[-1]
+        # del mine.actionList[-1]
         return payoff
         
     #     # calculate the max of the payoffs
@@ -584,6 +585,39 @@ def find_action_sequence(s0, s1):
     # approach: among all columns for which s0 < s1, pick the column loc
     # with the smallest s0[loc]
     
+    action_list = []
+    s0 = np.array(s0)
+    s1 = np.array(s1)
+    
+    '''
+    2D
+    '''
+    if (s0.ndim == 1):
+        while (not (s0 == s1).all()):
+            # want to increment over each column, while each column in s0 is less than s1
+            for x in range(s0.shape[0]):
+                if (s0[x] < s1[x]):
+                    s0[x] = s0[x] + 1
+                    # add the action to the action list
+                    action_list.append(x)
+                    
+        return action_list
+    
+    '''
+    3D
+    '''
+    while (not (s0 == s1).all()):
+        # want to increment over each column, while each column in s0 is less than s1
+        for x in range(s0.shape[0]):
+            for y in range(s0.shape[1]):
+                if (s0[x,y] < s1[x,y] ):
+                    s0[x,y] = s0[x,y] + 1
+                    # add the action to the action list
+                    action_list.append([x,y])
+                    
+    return action_list               
+    
+    
     
 def my_team():    
      '''Return the list of the team members of this assignment submission 
@@ -597,19 +631,19 @@ if __name__ == "__main__":
     # underground = a = np.arange(27).reshape(3,3,3)
     # m = Mine(underground)
     # underground = a = np.array([[[ 0.455,  0.579, -0.54 , -0.995, -0.771],
-                                  #  [ 0.049,  1.311, -0.061,  0.185, -1.959],
-                                  #  [ 2.38 , -1.404,  1.518, -0.856,  0.658],
-                                  #  [ 0.515, -0.236, -0.466, -1.241, -0.354]],
-                                  # [[ 0.801,  0.072, -2.183,  0.858, -1.504],
-                                  #  [-0.09 , -1.191, -1.083,  0.78 , -0.763],
-                                  #  [-1.815, -0.839,  0.457, -1.029,  0.915],
-                                  #  [ 0.708, -0.227,  0.874,  1.563, -2.284]],
-                                  # [[ -0.857,  0.309, -1.623,  0.364,  0.097],
-                                  #  [-0.876,  1.188, -0.16 ,  0.888, -0.546],
-                                  #  [-1.936, -3.055, -0.535, -1.561, -1.992],
-                                  #  [ 0.316,  0.97 ,  1.097,  0.234, -0.296]]])
+    #                                 [ 0.049,  1.311, -0.061,  0.185, -1.959],
+    #                                 [ 2.38 , -1.404,  1.518, -0.856,  0.658],
+    #                                 [ 0.515, -0.236, -0.466, -1.241, -0.354]],
+    #                                 [[ 0.801,  0.072, -2.183,  0.858, -1.504],
+    #                                 [-0.09 , -1.191, -1.083,  0.78 , -0.763],
+    #                                 [-1.815, -0.839,  0.457, -1.029,  0.915],
+    #                                 [ 0.708, -0.227,  0.874,  1.563, -2.284]],
+    #                                 [[ -0.857,  0.309, -1.623,  0.364,  0.097],
+    #                                 [-0.876,  1.188, -0.16 ,  0.888, -0.546],
+    #                                 [-1.936, -3.055, -0.535, -1.561, -1.992],
+    #                                 [ 0.316,  0.97 ,  1.097,  0.234, -0.296]]])
 
-    underground = a =[[-1,-1,-1], [4,5,6], [7,8,9]]
+    # underground = a =[[-1,-1,-1], [4,5,6], [7,8,9]]
     m = Mine(np.array(underground))
     print("underground:")
     print(underground)
