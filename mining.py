@@ -539,6 +539,6 @@ if __name__ == "__main__":
     print(m.len_y)
     print(m.len_z)
     
-    sol_ts = search.breadth_first_tree_search(m)
+    sol_ts = search.depth_first_tree_search(m)
 
     
