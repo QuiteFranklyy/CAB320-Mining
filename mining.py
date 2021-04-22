@@ -457,16 +457,6 @@ class Mine(search.Problem):
     # ========================  Class Mine  ==================================
     
     
-    
-def memoize(f):
-    memo = {}
-    def helper(x):
-        if x not in memo:            
-            memo[x] = f(x)
-        return memo[x]
-    return helper
-    
-    
 def search_dp_dig_plan(mine):
     '''
     Search using Dynamic Programming the most profitable sequence of 
@@ -560,7 +550,38 @@ def search_bb_dig_plan(mine):
 
     '''
     
-    raise NotImplementedError
+    
+    initial_state = mine.initial
+    
+    t0 = time.time()
+    # @lru_cache(maxsize=None)
+    def search_recs(state):
+        a = mine.actions(state)
+        
+        
+        for action in a:
+            s2 = mine.result(state, action)
+            mine.counter += 1
+            search_recs(s2)
+            
+        payoff = mine.payoff(state)
+        if (payoff > mine.biggestPayoff):
+            mine.biggestPayoff = payoff
+            mine.bfs = state
+            mine.bestActionList = find_action_sequence(mine.initial, state)
+        return payoff
+    
+    search_recs(initial_state)
+    print("biggest cum")
+    print(mine.biggestPayoff)
+    print("big count")
+    print(mine.counter)
+    print("big state")
+    print(mine.bfs)
+    print("best action list")
+    print(mine.bestActionList)
+    t1 = time.time()
+    print(t1-t0)
 
 
 
