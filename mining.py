@@ -171,20 +171,26 @@ class Mine(search.Problem):
         dimensions = underground.ndim
         assert dimensions in (2,3)
         shape = underground.shape
+        
+        #3D
         if dimensions == 3:
             self.len_x = shape[0]
             self.len_y = shape[1]
             self.len_z = shape[2]
             self.initial = tuple(map(tuple,np.zeros(tuple((self.len_x,self.len_y)),dtype=int)))
+            self.cumsum_mine = np.cumsum(self.underground, axis=2)
+            self.padded_sum = np.insert(self.cumsum_mine,0,0,axis=2)
             
-        else:
+        else: #2D
             self.len_x = shape[0]
             self.len_z = shape[1]
             self.len_y = 0
             self.initial = tuple(np.zeros((self.len_x,), dtype=int))
+            self.cumsum_mine = np.cumsum(self.underground, axis=1)
+            self.padded_sum = np.insert(self.cumsum_mine,0,0,axis=1)
         
         
-        self.cumsum_mine = underground.sum()
+        
         
         self.goal = None
         
@@ -376,12 +382,12 @@ class Mine(search.Problem):
             z = state[x]
             
             # Calculate the cumalative sum
-            cumsum = np.cumsum(self.underground, axis=1)
+            # cumsum = np.cumsum(self.underground, axis=1)
             
             # Pad out the mine for indexing
-            padded_sum = np.insert(cumsum,0,0,axis=1)
+            # padded_sum = np.insert(self.cumsum_mine,0,0,axis=1)
             # Return Payoff
-            return sum(padded_sum[x, z])
+            return sum(self.padded_sum[x, z])
                   
         '''
         3D
@@ -394,14 +400,14 @@ class Mine(search.Problem):
             z = state[x,y]
             
             # Do the cumalative sum
-            cumsum = np.cumsum(self.underground, axis=2)
+            # cumsum = np.cumsum(self.underground, axis=2)
             
             # Pad out the mine for indexing
-            padded_sum = np.insert(cumsum,0,0,axis=2)
+            # padded_sum = np.insert(self.cumsum_mine,0,0,axis=2)
             
             # Return payoff
 
-            return sum(padded_sum[x, y, z])
+            return sum(self.padded_sum[x, y, z])
             
         
 
@@ -446,6 +452,22 @@ class Mine(search.Problem):
             return True        
         
         return False
+    
+    
+    def b(self, s):
+        # using the cumsum find the max possible payoff
+        '''
+        2D
+        '''
+        state = np.array(s)
+        if (self.len_y) == 0:
+            max_payoff = 0
+            for x in range (self.len_x):
+                # max_payoff =
+                pass
+                
+                
+    
     
     
 
@@ -550,11 +572,13 @@ def search_bb_dig_plan(mine):
 
     '''
     
+    # we want to use uniform cost search where the heuristic is the max payoff
+    
+    
     
     initial_state = mine.initial
     
     t0 = time.time()
-    # @lru_cache(maxsize=None)
     def search_recs(state):
         a = mine.actions(state)
         
@@ -651,20 +675,25 @@ def my_team():
 if __name__ == "__main__":
     # underground = a = np.arange(27).reshape(3,3,3)
     # m = Mine(underground)
-    # underground = a = np.array([[[ 0.455,  0.579, -0.54 , -0.995, -0.771],
-    #                                 [ 0.049,  1.311, -0.061,  0.185, -1.959],
-    #                                 [ 2.38 , -1.404,  1.518, -0.856,  0.658],
-    #                                 [ 0.515, -0.236, -0.466, -1.241, -0.354]],
-    #                                 [[ 0.801,  0.072, -2.183,  0.858, -1.504],
-    #                                 [-0.09 , -1.191, -1.083,  0.78 , -0.763],
-    #                                 [-1.815, -0.839,  0.457, -1.029,  0.915],
-    #                                 [ 0.708, -0.227,  0.874,  1.563, -2.284]],
-    #                                 [[ -0.857,  0.309, -1.623,  0.364,  0.097],
-    #                                 [-0.876,  1.188, -0.16 ,  0.888, -0.546],
-    #                                 [-1.936, -3.055, -0.535, -1.561, -1.992],
-    #                                 [ 0.316,  0.97 ,  1.097,  0.234, -0.296]]])
+    underground = a = np.array([[[ 0.455,  0.579, -0.54 , -0.995, -0.771],
+                                    [ 0.049,  1.311, -0.061,  0.185, -1.959],
+                                    [ 2.38 , -1.404,  1.518, -0.856,  0.658],
+                                    [ 0.515, -0.236, -0.466, -1.241, -0.354]],
+                                    [[ 0.801,  0.072, -2.183,  0.858, -1.504],
+                                    [-0.09 , -1.191, -1.083,  0.78 , -0.763],
+                                    [-1.815, -0.839,  0.457, -1.029,  0.915],
+                                    [ 0.708, -0.227,  0.874,  1.563, -2.284]],
+                                    [[ -0.857,  0.309, -1.623,  0.364,  0.097],
+                                    [-0.876,  1.188, -0.16 ,  0.888, -0.546],
+                                    [-1.936, -3.055, -0.535, -1.561, -1.992],
+                                    [ 0.316,  0.97 ,  1.097,  0.234, -0.296]]])
 
-    # underground = a =[[-1,-1,-1], [4,5,6], [7,8,9]]
+    # underground = a =np.array([
+    #    [-0.814,  0.637, 1.824, -0.563],
+    #    [ 0.559, -0.234, -0.366,  0.07 ],
+    #    [ 0.175, -0.284,  0.026, -0.316],
+    #    [ 0.212,  0.088,  0.304,  0.604],
+    #    [-1.231, 1.558, -0.467, -0.371]])
     m = Mine(np.array(underground))
     print("underground:")
     print(underground)
