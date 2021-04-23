@@ -368,6 +368,9 @@ class Mine(search.Problem):
         
         No loops needed in the implementation!        
         '''
+        
+        if isinstance(state,Node):
+            state = state.state
         state = np.array(state) # convert to np.array in order to use tuple addressing
                                 # state[loc]   where loc is a tuple
         comparison = state == self.initial
@@ -606,7 +609,7 @@ def search_bb_dig_plan(mine):
     node = Node(mine.initial)
     if mine.goal_test(node.state):
         return node
-    frontier = PriorityQueue(order = "max",f=mine.b)
+    frontier = PriorityQueue(order = "max",f=mine.payoff)
     frontier.append(node)
     explored = set() # set of states
     while frontier:
