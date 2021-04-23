@@ -48,6 +48,7 @@ import time
 
 import search
 
+from search import best_first_graph_search, Node, PriorityQueue
 
     
 def convert_to_tuple(a):
@@ -192,7 +193,7 @@ class Mine(search.Problem):
         
         
         
-        self.goal = None
+        # self.goal = None
         
         self.num_actions = 0
         self.biggestPayoff = 0
@@ -456,15 +457,42 @@ class Mine(search.Problem):
     
     def b(self, s):
         # using the cumsum find the max possible payoff
+        
+        max_payoff = 0
+        if isinstance(s,Node):
+            s = s.state
         '''
         2D
         '''
         state = np.array(s)
+        # print(state)
         if (self.len_y) == 0:
-            max_payoff = 0
             for x in range (self.len_x):
-                # max_payoff =
-                pass
+                # print(state, x)
+                
+                depth = state[x]
+                max_payoff += max(self.padded_sum[x,depth:])
+            return max_payoff
+    
+        '''
+        3D
+        '''
+        for x in range (self.len_x):
+            for y in range(self.len_y):
+                # print(state, x,y)
+                
+                depth = state[x,y]
+                max_payoff += max(self.padded_sum[x,y,depth:])
+                # print(max_payoff)
+        return max_payoff
+                
+    def goal_test(self, state):
+        """Return True if the state is a goal. The default method compares the
+        state to self.goal, as specified in the constructor. Override this
+        method if checking against a single self.goal is not enough."""
+        
+        # checks if the max payoff is equal to the current payoff of the state
+        return self.b(state) == self.payoff(state)
                 
                 
     
@@ -574,34 +602,45 @@ def search_bb_dig_plan(mine):
     
     # we want to use uniform cost search where the heuristic is the max payoff
     
-    
-    
-    initial_state = mine.initial
-    
-    t0 = time.time()
-    def search_recs(state):
-        a = mine.actions(state)
+    print('bb')
+    node = Node(mine.initial)
+    if mine.goal_test(node.state):
+        return node
+    frontier = PriorityQueue(order = "max",f=mine.b)
+    frontier.append(node)
+    explored = set() # set of states
+    while frontier:
+        node = frontier.pop()
+        # if mine.goal_test(node.state):
+        #     return node
+        explored.add(node.state)
         
-        
-        for action in a:
-            s2 = mine.result(state, action)
-            mine.counter += 1
-            search_recs(s2)
+        if mine.payoff(node.state) > mine.biggestPayoff:
+            mine.biggestPayoff = mine.payoff(node.state)
+            mine.bfs = node.state
             
-        payoff = mine.payoff(state)
-        if (payoff > mine.biggestPayoff):
-            mine.biggestPayoff = payoff
-            mine.bfs = state
-            mine.bestActionList = find_action_sequence(mine.initial, state)
-        return payoff
+        for child in node.expand(mine):
+            if child.state not in explored and child not in frontier:
+                if not (mine.b(child) < mine.biggestPayoff):
+                    frontier.append(child)
+            # elif child in frontier:
+                # frontier[child] is the f value of the 
+                # incumbent node that shares the same state as 
+                # the node child.  Read implementation of PriorityQueue
+                
+                    # del frontier[child] # delete the incumbent node
+                    
     
-    search_recs(initial_state)
     print("biggest cum")
     print(mine.biggestPayoff)
-    print("big count")
-    print(mine.counter)
     print("big state")
     print(mine.bfs)
+    return None
+    
+    
+    
+    
+    
     print("best action list")
     print(mine.bestActionList)
     t1 = time.time()
@@ -689,11 +728,11 @@ if __name__ == "__main__":
                                     [ 0.316,  0.97 ,  1.097,  0.234, -0.296]]])
 
     # underground = a =np.array([
-    #    [-0.814,  0.637, 1.824, -0.563],
-    #    [ 0.559, -0.234, -0.366,  0.07 ],
-    #    [ 0.175, -0.284,  0.026, -0.316],
-    #    [ 0.212,  0.088,  0.304,  0.604],
-    #    [-1.231, 1.558, -0.467, -0.371]])
+    #     [-0.814,  0.637, 1.824, -0.563],
+    #     [ 0.559, -0.234, -0.366,  0.07 ],
+    #     [ 0.175, -0.284,  0.026, -0.316],
+    #     [ 0.212,  0.088,  0.304,  0.604],
+    #     [-1.231, 1.558, -0.467, -0.371]])
     m = Mine(np.array(underground))
     print("underground:")
     print(underground)
@@ -708,6 +747,13 @@ if __name__ == "__main__":
     print(m.len_y)
     print(m.len_z)
     
-    sol_ts = search_dp_dig_plan(m)
+    # sol_ts = search_dp_dig_plan(m)
+    
+    t0 = time.time()
+    sol_ts = search_bb_dig_plan(m)
+    t1 = time.time()
+    print(t1-t0)
+    
+    # print(sol_ts.state)
 
     
