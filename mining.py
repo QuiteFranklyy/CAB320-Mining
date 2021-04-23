@@ -639,15 +639,6 @@ def search_bb_dig_plan(mine):
     print("big state")
     print(mine.bfs)
     return None
-    
-    
-    
-    
-    
-    print("best action list")
-    print(mine.bestActionList)
-    t1 = time.time()
-    print(t1-t0)
 
 
 
