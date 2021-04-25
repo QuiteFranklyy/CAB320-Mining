@@ -626,6 +626,8 @@ def search_bb_dig_plan(mine):
             if child.state not in explored and child not in frontier:
                 if not (mine.b(child) < mine.biggestPayoff):
                     frontier.append(child)
+                    
+            
             # elif child in frontier:
                 # frontier[child] is the f value of the 
                 # incumbent node that shares the same state as 
