@@ -371,15 +371,11 @@ class Mine(search.Problem):
         if state.ndim == 1:
             # Find the x, z coordinates
             where = np.where(state > 0)
+            # Take the x coordinates from where function
             x = where[0]
+            # Extract column depths using the x coordinates
             z = state[x]
-
-            # Calculate the cumalative sum
-            # cumsum = np.cumsum(self.underground, axis=1)
-
-            # Pad out the mine for indexing
-            # padded_sum = np.insert(self.cumsum_mine,0,0,axis=1)
-            # Return Payoff
+            # Calculate and return the sum of the current state
             return sum(self.padded_sum[x, z])
 
         '''
@@ -388,18 +384,12 @@ class Mine(search.Problem):
         if state.ndim == 2:
             # Find the x, y, z coordinates
             where = np.where(state > 0)
+            # Split x and y coordinates out of where function into 2 seperate arrays
             x = np.array(where[0])
             y = np.array(where[1])
+            # Extract the depths of each column using the x and y coordinates of the state
             z = state[x, y]
-
-            # Do the cumalative sum
-            # cumsum = np.cumsum(self.underground, axis=2)
-
-            # Pad out the mine for indexing
-            # padded_sum = np.insert(self.cumsum_mine,0,0,axis=2)
-
-            # Return payoff
-
+            # Calculate and return the sum of the current state
             return sum(self.padded_sum[x, y, z])
 
     def is_dangerous(self, state):
