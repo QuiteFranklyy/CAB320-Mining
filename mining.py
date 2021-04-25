@@ -603,10 +603,10 @@ def search_bb_dig_plan(mine):
     print(mine.bfs)
     print("calc time:", mine.calc_time)
     print("big count:", mine.counter)
-    return None
+    return mine.biggestPayoff, mine.bfs, find_action_sequence(mine.initial,mine.bfs)
 
  
-    return mine.biggestPayoff, mine.bfs, find_action_sequence(mine.initial,mine.bfs)
+    
 
 
 def find_action_sequence(s0, s1):
@@ -712,10 +712,7 @@ if __name__ == "__main__":
     print(m.len_y)
     print(m.len_z)
     
-    # t0 = time.time()
-    sol_ts = search_dp_dig_plan(m)
-    # t1 = time.time()
-    # print(t1-t0)
+
     print("dp")
     
     t0 = time.time()
