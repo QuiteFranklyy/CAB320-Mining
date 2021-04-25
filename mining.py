@@ -577,7 +577,7 @@ def search_bb_dig_plan(mine):
         if mine.payoff(current_node.state) > mine.biggestPayoff:
             mine.biggestPayoff = mine.payoff(current_node.state)
             mine.bestState = current_node.state
-            mine.bestActionList = find_action_sequence(mine.initial,current_node)
+            mine.bestActionList = find_action_sequence(mine.initial,current_node.state)
             
         # expand the child nodes 
         for child_node in current_node.expand(mine):
