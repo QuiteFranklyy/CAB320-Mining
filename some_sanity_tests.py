@@ -77,7 +77,7 @@ import numpy as np
 
 # from mining import Mine, search_dp_dig_plan, search_bb_dig_plan
 
-from SOLUTION_mining import Mine, search_dp_dig_plan, search_bb_dig_plan
+from mining import Mine, search_dp_dig_plan, search_bb_dig_plan
 # from SOLUTION_mining import search_dp_rec
 
 

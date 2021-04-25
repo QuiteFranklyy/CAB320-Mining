@@ -197,7 +197,7 @@ class Mine(search.Problem):
         self.num_actions = 0
         self.biggestPayoff = 0
         self.counter = 0
-        self.bfs = []
+        self.bestState = []
         self.actionList = []
         self.bestActionList = []
         self.calc_time = 0
@@ -321,8 +321,6 @@ class Mine(search.Problem):
             return '\n'.join('level {}\n'.format(z)
                              + str(self.underground[..., z]) for z in range(self.len_z))
 
-            return self.underground[loc[0], loc[1], :]
-
     @staticmethod
     def plot_state(state):
         if state.ndim == 1:
@@ -375,15 +373,11 @@ class Mine(search.Problem):
         if state.ndim == 1:
             # Find the x, z coordinates
             where = np.where(state > 0)
+            # Take the x coordinates from where function
             x = where[0]
+            # Extract column depths using the x coordinates
             z = state[x]
-
-            # Calculate the cumalative sum
-            # cumsum = np.cumsum(self.underground, axis=1)
-
-            # Pad out the mine for indexing
-            # padded_sum = np.insert(self.cumsum_mine,0,0,axis=1)
-            # Return Payoff
+            # Calculate and return the sum of the current state
             return sum(self.padded_sum[x, z])
 
         '''
@@ -392,18 +386,12 @@ class Mine(search.Problem):
         if state.ndim == 2:
             # Find the x, y, z coordinates
             where = np.where(state > 0)
+            # Split x and y coordinates out of where function into 2 seperate arrays
             x = np.array(where[0])
             y = np.array(where[1])
+            # Extract the depths of each column using the x and y coordinates of the state
             z = state[x, y]
-
-            # Do the cumalative sum
-            # cumsum = np.cumsum(self.underground, axis=2)
-
-            # Pad out the mine for indexing
-            # padded_sum = np.insert(self.cumsum_mine,0,0,axis=2)
-
-            # Return payoff
-
+            # Calculate and return the sum of the current state
             return sum(self.padded_sum[x, y, z])
 
     def is_dangerous(self, state):
@@ -449,7 +437,7 @@ class Mine(search.Problem):
 
 
 
-    def b(self, s):
+    def max_theoretical_payoff(self, s):
         # using the cumsum find the max possible payoff
         t0 = time.time()
         
@@ -540,7 +528,7 @@ def search_dp_dig_plan(mine):
         if (payoff > mine.biggestPayoff):
             # Assign the Best variables respectively
             mine.biggestPayoff = payoff
-            mine.bfs = state
+            mine.bestState = state
 
         # del mine.actionList[-1]
         return payoff
@@ -548,10 +536,10 @@ def search_dp_dig_plan(mine):
     # Run function on intitial state of array
     search_recs(initial_state)
     #Find the best action list for resulting state
-    mine.bestActionList = find_action_sequence(mine.initial, mine.bfs)
+    mine.bestActionList = find_action_sequence(mine.initial, mine.bestState)
     
     #Return resulting variables
-    return mine.biggestPayoff, mine.bfs, mine.bestActionList
+    return mine.biggestPayoff, mine.bestState, mine.bestActionList
 
 
 def search_bb_dig_plan(mine):
@@ -571,30 +559,43 @@ def search_bb_dig_plan(mine):
 
     '''
 
-    # we want to use uniform cost search where the heuristic is the max payoff
+    # initialise the first node, the frontier, and the set of explored states
 
     initial_node = Node(mine.initial)
+    # frontier is a Priority Queue, ordered in descedning order by the payoff of each state
     frontier = PriorityQueue(order="max", f=mine.payoff)
     frontier.append(initial_node)
     explored = set()  # set of explored states
     
-    # while there are nodes in the frontier
+    # while there are nodes in the frontier, continue searching
     while frontier:
+        
+        # get the first node off the frontier
         current_node = frontier.pop()
+        # add it to the explored nodes
         explored.add(current_node.state)
         
+        # if the payoff of the current node is bigger than our current best, update the biggest payoff, best state, and best action list
         if mine.payoff(current_node.state) > mine.biggestPayoff:
             mine.biggestPayoff = mine.payoff(current_node.state)
-            mine.bfs = current_node.state
-
+            mine.bestState = current_node.state
+            mine.bestActionList = find_action_sequence(mine.initial,current_node.state)
+            
+            mine.counter += 1
+            
+        # expand the child nodes 
         for child_node in current_node.expand(mine):
-            if child_node.state not in explored and child_node not in frontier and (not (mine.b(child_node) < mine.biggestPayoff)):
+            # if the node is not in explored, and it is not in the frontier, AND it's best possible payoff is NOT less than our current best payoff
+            if child_node.state not in explored and child_node not in frontier and (not (mine.max_theoretical_payoff(child_node) < mine.biggestPayoff)):
                     frontier.append(child_node)
-                
+            
+            # otherwise if it is already in the frontier, delete it because it is not
             elif child_node in frontier:                
-                del frontier[child_node] # delete the incumbent node
+                del frontier[child_node]
+                
+    print("Number of Explored Nodes:",mine.counter)
                     
-    return mine.biggestPayoff, mine.bfs, find_action_sequence(mine.initial,mine.bfs)
+    return mine.biggestPayoff, mine.bestState, mine.bestActionList
 
  
     
@@ -666,26 +667,51 @@ if __name__ == "__main__":
     # underground = a = np.arange(27).reshape(3,3,3)
     # m = Mine(underground)
     # underground = a = np.array([[[0.455,  0.579, -0.54, -0.995, -0.771],
-    #                              [0.049,  1.311, -0.061,  0.185, -1.959],
-    #                              [2.38, -1.404,  1.518, -0.856,  0.658],
-    #                              [0.515, -0.236, -0.466, -1.241, -0.354]],
+    #                               [0.049,  1.311, -0.061,  0.185, -1.959],
+    #                               [2.38, -1.404,  1.518, -0.856,  0.658],
+    #                               [0.515, -0.236, -0.466, -1.241, -0.354]],
     #                             [[0.801,  0.072, -2.183,  0.858, -1.504],
-    #                              [-0.09, -1.191, -1.083,  0.78, -0.763],
-    #                              [-1.815, -0.839,  0.457, -1.029,  0.915],
-    #                              [0.708, -0.227,  0.874,  1.563, -2.284]],
+    #                               [-0.09, -1.191, -1.083,  0.78, -0.763],
+    #                               [-1.815, -0.839,  0.457, -1.029,  0.915],
+    #                               [0.708, -0.227,  0.874,  1.563, -2.284]],
     #                             [[-0.857,  0.309, -1.623,  0.364,  0.097],
-    #                              [-0.876,  1.188, -0.16,  0.888, -0.546],
-    #                              [-1.936, -3.055, -0.535, -1.561, -1.992],
-    #                              [0.316,  0.97,  1.097,  0.234, -0.296]]])
-
-    underground = a =np.array([
-        [-0.814,  0.637, 1.824, -0.563],
-        [ 0.559, -0.234, -0.366,  0.07 ],
-        [ 0.175, -0.284,  0.026, -0.316],
-        [ 0.212,  0.088,  0.304,  0.604],
-        [-1.231, 1.558, -0.467, -0.371]])
+    #                               [-0.876,  1.188, -0.16,  0.888, -0.546],
+    #                               [-1.936, -3.055, -0.535, -1.561, -1.992],
+    #                               [0.316,  0.97,  1.097,  0.234, -0.296]]])
     
-    underground = a = np.array([[1,2,3],[4,5,6],[7,8,9]])
+    # underground = a = np.array([[[0.455,  0.579, -0.54, -0.995, -0.771, -0.696],
+    #                               [0.049,  1.311, -0.061,  0.185, -1.959, 0.421],
+    #                               [2.38, -1.404,  1.518, -0.856,  0.658, 0.703],
+    #                               [0.515, -0.236, -0.466, -1.241, -0.354, 0.703]],
+    #                             [[0.801,  0.072, -2.183,  0.858, -1.504, 0.314],
+    #                               [-0.09, -1.191, -1.083,  0.78, -0.763, -0.833],
+    #                               [-1.815, -0.839,  0.457, -1.029,  0.915, 0.187],
+    #                               [0.708, -0.227,  0.874,  1.563, -2.284, 0.261]],
+    #                             [[-0.857,  0.309, -1.623,  0.364,  0.097, -0.261],
+    #                               [-0.876,  1.188, -0.16,  0.888, -0.546, -0.845],
+    #                               [-1.936, -3.055, -0.535, -1.561, -1.992, 0.262],
+    #                               [0.316,  0.97,  1.097,  0.234, -0.296, 0.248]],
+    #                             [[-0.857,  0.309, -1.623,  0.364,  0.097, -0.261],
+    #                               [-0.876,  1.188, -0.16,  0.888, -0.546, -0.845],
+    #                               [-1.936, -3.055, -0.535, -1.561, -1.992, 0.262],
+    #                               [0.316,  0.97,  1.097,  0.234, -0.296, 0.248]]])
+
+    # underground = a =np.array([
+    #     [-0.814,  0.637, 1.824, -0.563],
+    #     [ 0.559, -0.234, -0.366,  0.07 ],
+    #     [ 0.175, -0.284,  0.026, -0.316],
+    #     [ 0.212,  0.088,  0.304,  0.604],
+    #     [-1.231, 1.558, -0.467, -0.371]])
+    
+    underground = a =np.array([
+        [-0.814,  0.637, 1.824, -0.563, 0.683],
+        [ 0.559, -0.234, -0.366,  0.07, -0.030],
+        [ 0.175, -0.284,  0.026, -0.316, 0.443],
+        [ 0.212,  0.088,  0.304,  0.604, 0.001],
+        [-1.231, 1.558, -0.467, -0.371, -0.998],
+        [0.450, -0.042, 0.147, -0.097, 0.885],
+        [0.427, -0.922, 0.893, 0.849, -0.075]])
+    
     m = Mine(np.array(underground))
     
     print("underground:")
@@ -740,7 +766,7 @@ if __name__ == "__main__":
     # print("Best Action List")
     # print(sol_ts[2])
     
-    # print("Time")
-    # print(t1-t0)
+    print("Time")
+    print(t1-t0)
 
     # print(sol_ts.state)
