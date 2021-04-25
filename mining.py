@@ -445,7 +445,7 @@ class Mine(search.Problem):
 
 
 
-    def b(self, s):
+    def max_theoretical_payoff(self, s):
         # using the cumsum find the max possible payoff
         t0 = time.time()
         
@@ -592,10 +592,10 @@ def search_bb_dig_plan(mine):
         # expand the child nodes 
         for child_node in current_node.expand(mine):
             # if the node is not in explored, and it is not in the frontier, AND it's best possible payoff is NOT less than our current best payoff
-            if child_node.state not in explored and child_node not in frontier and (not (mine.b(child_node) < mine.biggestPayoff)):
+            if child_node.state not in explored and child_node not in frontier and (not (mine.max_theoretical_payoff(child_node) < mine.biggestPayoff)):
                     frontier.append(child_node)
             
-            # otherwiseif it is in the frontier, delete it
+            # otherwise if it is already in the frontier, delete it because it is not
             elif child_node in frontier:                
                 del frontier[child_node]
                     
@@ -671,17 +671,17 @@ if __name__ == "__main__":
     # underground = a = np.arange(27).reshape(3,3,3)
     # m = Mine(underground)
     underground = a = np.array([[[0.455,  0.579, -0.54, -0.995, -0.771],
-                                 [0.049,  1.311, -0.061,  0.185, -1.959],
-                                 [2.38, -1.404,  1.518, -0.856,  0.658],
-                                 [0.515, -0.236, -0.466, -1.241, -0.354]],
+                                  [0.049,  1.311, -0.061,  0.185, -1.959],
+                                  [2.38, -1.404,  1.518, -0.856,  0.658],
+                                  [0.515, -0.236, -0.466, -1.241, -0.354]],
                                 [[0.801,  0.072, -2.183,  0.858, -1.504],
-                                 [-0.09, -1.191, -1.083,  0.78, -0.763],
-                                 [-1.815, -0.839,  0.457, -1.029,  0.915],
-                                 [0.708, -0.227,  0.874,  1.563, -2.284]],
+                                  [-0.09, -1.191, -1.083,  0.78, -0.763],
+                                  [-1.815, -0.839,  0.457, -1.029,  0.915],
+                                  [0.708, -0.227,  0.874,  1.563, -2.284]],
                                 [[-0.857,  0.309, -1.623,  0.364,  0.097],
-                                 [-0.876,  1.188, -0.16,  0.888, -0.546],
-                                 [-1.936, -3.055, -0.535, -1.561, -1.992],
-                                 [0.316,  0.97,  1.097,  0.234, -0.296]]])
+                                  [-0.876,  1.188, -0.16,  0.888, -0.546],
+                                  [-1.936, -3.055, -0.535, -1.561, -1.992],
+                                  [0.316,  0.97,  1.097,  0.234, -0.296]]])
 
     # underground = a =np.array([
     #     [-0.814,  0.637, 1.824, -0.563],
