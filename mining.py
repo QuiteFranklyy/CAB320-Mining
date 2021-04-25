@@ -359,6 +359,7 @@ class Mine(search.Problem):
         No loops needed in the implementation!        
         '''
 
+        # if it's a node, get the state
         if isinstance(state, Node):
             state = state.state
         # convert to np.array in order to use tuple addressing
@@ -433,43 +434,41 @@ class Mine(search.Problem):
         if (self.dig_tolerance + 1) in dif4:
             return True
 
+        # if none of the states have a dangerous difference, then the state is safe
         return False
 
 
 
     def max_theoretical_payoff(self, s):
         # using the cumsum find the max possible payoff
-        t0 = time.time()
         
         max_payoff = 0
+        # if it's a node, get the state
         if isinstance(s, Node):
             s = s.state
         '''
         2D
         '''
         state = np.array(s)
-        # print(state)
         if (self.len_y) == 0:
+            # for each column, calculate the maximum possible cumulative sum
             for x in range(self.len_x):
-                # print(state, x)
-
+                # get the depth of the column
                 depth = state[x]
+                # add the maximum cumulative sum to the maximum payoff
                 max_payoff += max(self.padded_sum[x, depth:])
             return max_payoff
 
         '''
         3D
         '''
+        # for each column, calculate the maximum possible cumulative sum
         for x in range(self.len_x):
             for y in range(self.len_y):
-                # print(state, x,y)
-
+                # get the depth of the column
                 depth = state[x, y]
+                # add the maximum cumulative sum to the maximum payoff
                 max_payoff += max(self.padded_sum[x, y, depth:])
-                # print(max_payoff)
-                
-        t1 = time.time()
-        self.calc_time += t1-t0
         return max_payoff
     
     
@@ -752,19 +751,19 @@ if __name__ == "__main__":
     print("Iterations")
     print(m.counter)
 
-    # print("bb")
-    # t0 = time.time()
-    # sol_ts = search_bb_dig_plan(m)
-    # t1 = time.time()
+    print("bb")
+    t0 = time.time()
+    sol_ts = search_bb_dig_plan(m)
+    t1 = time.time()
     
-    # print("Biggest Payoff")
-    # print(sol_ts[0])
+    print("Biggest Payoff")
+    print(sol_ts[0])
     
-    # print("Best State")
-    # print(sol_ts[1])
+    print("Best State")
+    print(sol_ts[1])
     
-    # print("Best Action List")
-    # print(sol_ts[2])
+    print("Best Action List")
+    print(sol_ts[2])
     
     print("Time")
     print(t1-t0)
