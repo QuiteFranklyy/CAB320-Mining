@@ -587,7 +587,7 @@ def search_bb_dig_plan(mine):
         if mine.payoff(current_node.state) > mine.biggestPayoff:
             mine.biggestPayoff = mine.payoff(current_node.state)
             mine.bestState = current_node.state
-            mine.bestActionList = mine.find_action_sequence(mine.initial,current_node)
+            mine.bestActionList = find_action_sequence(mine.initial,current_node)
             
         # expand the child nodes 
         for child_node in current_node.expand(mine):
@@ -598,6 +598,8 @@ def search_bb_dig_plan(mine):
             # otherwise if it is already in the frontier, delete it because it is not
             elif child_node in frontier:                
                 del frontier[child_node]
+                
+    print("Number of Explored Nodes:", mine.counter)
                     
     return mine.biggestPayoff, mine.bestState, mine.bestActionList
 
@@ -708,23 +710,23 @@ if __name__ == "__main__":
     print(m.len_y)
     print(m.len_z)
     
-    print("dp")
+    # print("dp")
     
-    t0 = time.time()
-    sol_ts = search_dp_dig_plan(m)
-    t1 = time.time()
+    # t0 = time.time()
+    # sol_ts = search_dp_dig_plan(m)
+    # t1 = time.time()
     
-    print("Biggest Payoff")
-    print(sol_ts[0])
+    # print("Biggest Payoff")
+    # print(sol_ts[0])
     
-    print("Best State")
-    print(sol_ts[1])
+    # print("Best State")
+    # print(sol_ts[1])
     
-    print("Best Action List")
-    print(sol_ts[2])
+    # print("Best Action List")
+    # print(sol_ts[2])
     
-    print("Time")
-    print(t1-t0)
+    # print("Time")
+    # print(t1-t0)
 
     print("bb")
     t0 = time.time()
@@ -742,5 +744,7 @@ if __name__ == "__main__":
     
     print("Time")
     print(t1-t0)
+    
+    
 
     # print(sol_ts.state)
