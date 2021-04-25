@@ -688,6 +688,10 @@ if __name__ == "__main__":
                                 [[-0.857,  0.309, -1.623,  0.364,  0.097, -0.261],
                                   [-0.876,  1.188, -0.16,  0.888, -0.546, -0.845],
                                   [-1.936, -3.055, -0.535, -1.561, -1.992, 0.262],
+                                  [0.316,  0.97,  1.097,  0.234, -0.296, 0.248]],
+                                [[-0.857,  0.309, -1.623,  0.364,  0.097, -0.261],
+                                  [-0.876,  1.188, -0.16,  0.888, -0.546, -0.845],
+                                  [-1.936, -3.055, -0.535, -1.561, -1.992, 0.262],
                                   [0.316,  0.97,  1.097,  0.234, -0.296, 0.248]]])
 
     # underground = a =np.array([
@@ -725,23 +729,23 @@ if __name__ == "__main__":
     print(m.len_y)
     print(m.len_z)
     
-    # print("dp")
+    print("dp")
     
-    # t0 = time.time()
-    # sol_ts = search_dp_dig_plan(m)
-    # t1 = time.time()
+    t0 = time.time()
+    sol_ts = search_dp_dig_plan(m)
+    t1 = time.time()
     
-    # print("Biggest Payoff")
-    # print(sol_ts[0])
+    print("Biggest Payoff")
+    print(sol_ts[0])
     
-    # print("Best State")
-    # print(sol_ts[1])
+    print("Best State")
+    print(sol_ts[1])
     
-    # print("Best Action List")
-    # print(sol_ts[2])
+    print("Best Action List")
+    print(sol_ts[2])
     
-    # print("Time")
-    # print(t1-t0)
+    print("Time")
+    print(t1-t0)
 
     print("bb")
     t0 = time.time()
