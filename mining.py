@@ -445,6 +445,8 @@ class Mine(search.Problem):
 
         return False
 
+
+
     def b(self, s):
         # using the cumsum find the max possible payoff
         t0 = time.time()
@@ -479,6 +481,9 @@ class Mine(search.Problem):
         t1 = time.time()
         self.calc_time += t1-t0
         return max_payoff
+    
+    
+
 
     def goal_test(self, state):
         """Return True if the state is a goal. The default method compares the
@@ -566,43 +571,27 @@ def search_bb_dig_plan(mine):
 
     # we want to use uniform cost search where the heuristic is the max payoff
 
-    node = Node(mine.initial)
-    if mine.goal_test(node.state):
-        return node
+    initial_node = Node(mine.initial)
     frontier = PriorityQueue(order="max", f=mine.payoff)
-    frontier.append(node)
-    explored = set()  # set of states
-    while frontier:
-        node = frontier.pop()
-        # if mine.goal_test(node.state):
-        #     return node
-        explored.add(node.state)
-        mine.counter += 1
-        
-        if mine.payoff(node.state) > mine.biggestPayoff:
-            mine.biggestPayoff = mine.payoff(node.state)
-            mine.bfs = node.state
-
-        for child in node.expand(mine):
-            if child.state not in explored and child not in frontier:
-                if not (mine.b(child) < mine.biggestPayoff):
-                    frontier.append(child)
-                    
-            
-            # elif child in frontier:
-                # frontier[child] is the f value of the
-                # incumbent node that shares the same state as
-                # the node child.  Read implementation of PriorityQueue
-
-                    # del frontier[child] # delete the incumbent node
-                    
+    frontier.append(initial_node)
+    explored = set()  # set of explored states
     
-    print("biggest cum")
-    print(mine.biggestPayoff)
-    print("big state")
-    print(mine.bfs)
-    print("calc time:", mine.calc_time)
-    print("big count:", mine.counter)
+    # while there are nodes in the frontier
+    while frontier:
+        current_node = frontier.pop()
+        explored.add(current_node.state)
+        
+        if mine.payoff(current_node.state) > mine.biggestPayoff:
+            mine.biggestPayoff = mine.payoff(current_node.state)
+            mine.bfs = current_node.state
+
+        for child_node in current_node.expand(mine):
+            if child_node.state not in explored and child_node not in frontier and (not (mine.b(child_node) < mine.biggestPayoff)):
+                    frontier.append(child_node)
+                
+            elif child_node in frontier:                
+                del frontier[child_node] # delete the incumbent node
+                    
     return mine.biggestPayoff, mine.bfs, find_action_sequence(mine.initial,mine.bfs)
 
  
@@ -712,7 +701,7 @@ if __name__ == "__main__":
     print(m.len_y)
     print(m.len_z)
     
-
+    '''
     print("dp")
     
     t0 = time.time()
@@ -730,7 +719,7 @@ if __name__ == "__main__":
     
     print("Time")
     print(t1-t0)
-    
+    '''
     print("bb")
     t0 = time.time()
     sol_ts = search_bb_dig_plan(m)
