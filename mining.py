@@ -522,7 +522,7 @@ def search_dp_dig_plan(mine):
             # Find the resulting state of that action
             s2 = mine.result(state, action)
             # Counter used for tracking amount of computation
-            mine.counter += 1
+            #mine.counter += 1
             # Recursion with new state
             search_recs(s2)
 
@@ -572,22 +572,24 @@ def search_bb_dig_plan(mine):
     frontier = PriorityQueue(order="max", f=mine.payoff)
     frontier.append(node)
     explored = set()  # set of states
+
     while frontier:
+ 
         node = frontier.pop()
         # if mine.goal_test(node.state):
         #     return node
         explored.add(node.state)
-        mine.counter += 1
         
         if mine.payoff(node.state) > mine.biggestPayoff:
             mine.biggestPayoff = mine.payoff(node.state)
             mine.bfs = node.state
 
         for child in node.expand(mine):
-            if child.state not in explored and child not in frontier:
+            if (child.state not in explored) and (child not in frontier):
                 if not (mine.b(child) < mine.biggestPayoff):
                     frontier.append(child)
-                    
+
+        
             
             # elif child in frontier:
                 # frontier[child] is the f value of the
@@ -596,13 +598,6 @@ def search_bb_dig_plan(mine):
 
                     # del frontier[child] # delete the incumbent node
                     
-    
-    print("biggest cum")
-    print(mine.biggestPayoff)
-    print("big state")
-    print(mine.bfs)
-    print("calc time:", mine.calc_time)
-    print("big count:", mine.counter)
     return mine.biggestPayoff, mine.bfs, find_action_sequence(mine.initial,mine.bfs)
 
  
@@ -712,7 +707,7 @@ if __name__ == "__main__":
     print(m.len_y)
     print(m.len_z)
     
-
+    
     print("dp")
     
     t0 = time.time()
