@@ -195,7 +195,7 @@ class Mine(search.Problem):
         self.num_actions = 0
         self.biggestPayoff = 0
         self.counter = 0
-        self.bfs = []
+        self.bestState = []
         self.actionList = []
         self.bestActionList = []
         self.calc_time = 0
@@ -536,7 +536,7 @@ def search_dp_dig_plan(mine):
         if (payoff > mine.biggestPayoff):
             # Assign the Best variables respectively
             mine.biggestPayoff = payoff
-            mine.bfs = state
+            mine.bestState = state
 
         # del mine.actionList[-1]
         return payoff
@@ -544,10 +544,10 @@ def search_dp_dig_plan(mine):
     # Run function on intitial state of array
     search_recs(initial_state)
     #Find the best action list for resulting state
-    mine.bestActionList = find_action_sequence(mine.initial, mine.bfs)
+    mine.bestActionList = find_action_sequence(mine.initial, mine.bestState)
     
     #Return resulting variables
-    return mine.biggestPayoff, mine.bfs, mine.bestActionList
+    return mine.biggestPayoff, mine.bestState, mine.bestActionList
 
 
 def search_bb_dig_plan(mine):
@@ -567,30 +567,39 @@ def search_bb_dig_plan(mine):
 
     '''
 
-    # we want to use uniform cost search where the heuristic is the max payoff
+    # initialise the first node, the frontier, and the set of explored states
 
     initial_node = Node(mine.initial)
+    # frontier is a Priority Queue, ordered in descedning order by the payoff of each state
     frontier = PriorityQueue(order="max", f=mine.payoff)
     frontier.append(initial_node)
     explored = set()  # set of explored states
     
-    # while there are nodes in the frontier
+    # while there are nodes in the frontier, continue searching
     while frontier:
+        
+        # get the first node off the frontier
         current_node = frontier.pop()
+        # add it to the explored nodes
         explored.add(current_node.state)
         
+        # if the payoff of the current node is bigger than our current best, update the biggest payoff, best state, and best action list
         if mine.payoff(current_node.state) > mine.biggestPayoff:
             mine.biggestPayoff = mine.payoff(current_node.state)
-            mine.bfs = current_node.state
-
+            mine.bestState = current_node.state
+            mine.bestActionList = mine.find_action_sequence(mine.initial,current_node)
+            
+        # expand the child nodes 
         for child_node in current_node.expand(mine):
+            # if the node is not in explored, and it is not in the frontier, AND it's best possible payoff is NOT less than our current best payoff
             if child_node.state not in explored and child_node not in frontier and (not (mine.b(child_node) < mine.biggestPayoff)):
                     frontier.append(child_node)
-                
+            
+            # otherwiseif it is in the frontier, delete it
             elif child_node in frontier:                
-                del frontier[child_node] # delete the incumbent node
+                del frontier[child_node]
                     
-    return mine.biggestPayoff, mine.bfs, find_action_sequence(mine.initial,mine.bfs)
+    return mine.biggestPayoff, mine.bestState, mine.bestActionList
 
  
     
