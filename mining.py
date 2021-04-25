@@ -319,8 +319,6 @@ class Mine(search.Problem):
             return '\n'.join('level {}\n'.format(z)
                              + str(self.underground[..., z]) for z in range(self.len_z))
 
-            return self.underground[loc[0], loc[1], :]
-
     @staticmethod
     def plot_state(state):
         if state.ndim == 1:
