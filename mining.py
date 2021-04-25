@@ -588,8 +588,6 @@ def search_bb_dig_plan(mine):
             # otherwise if it is already in the frontier, delete it because it is not
             elif child_node in frontier:                
                 del frontier[child_node]
-                
-    print("Number of Explored Nodes:", mine.counter)
                     
     return mine.biggestPayoff, mine.bestState, mine.bestActionList
 
