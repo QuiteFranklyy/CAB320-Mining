@@ -164,7 +164,9 @@ class Mine(search.Problem):
         # super().__init__() # call to parent class constructor not needed
 
         # self.underground  should be considered as a 'read-only' variable!
-        # Checking if dig_tolerance > 0
+        # Checking if dig_tolerance > 0 and a letter
+        assert isinstance(dig_tolerance,int)
+        assert underground.dtype == int or underground.dtype == float
         assert dig_tolerance > 0
         # Assigning variables
         self.dig_tolerance = dig_tolerance
@@ -527,7 +529,7 @@ def search_dp_dig_plan(mine):
             # Find the resulting state of that action
             s2 = mine.result(state, action)
             # Counter used for tracking amount of computation
-            #mine.counter += 1
+            mine.counter += 1
             # Recursion with new state
             search_recs(s2)
 
@@ -663,25 +665,27 @@ def my_team():
 if __name__ == "__main__":
     # underground = a = np.arange(27).reshape(3,3,3)
     # m = Mine(underground)
-    underground = a = np.array([[[0.455,  0.579, -0.54, -0.995, -0.771],
-                                 [0.049,  1.311, -0.061,  0.185, -1.959],
-                                 [2.38, -1.404,  1.518, -0.856,  0.658],
-                                 [0.515, -0.236, -0.466, -1.241, -0.354]],
-                                [[0.801,  0.072, -2.183,  0.858, -1.504],
-                                 [-0.09, -1.191, -1.083,  0.78, -0.763],
-                                 [-1.815, -0.839,  0.457, -1.029,  0.915],
-                                 [0.708, -0.227,  0.874,  1.563, -2.284]],
-                                [[-0.857,  0.309, -1.623,  0.364,  0.097],
-                                 [-0.876,  1.188, -0.16,  0.888, -0.546],
-                                 [-1.936, -3.055, -0.535, -1.561, -1.992],
-                                 [0.316,  0.97,  1.097,  0.234, -0.296]]])
+    # underground = a = np.array([[[0.455,  0.579, -0.54, -0.995, -0.771],
+    #                              [0.049,  1.311, -0.061,  0.185, -1.959],
+    #                              [2.38, -1.404,  1.518, -0.856,  0.658],
+    #                              [0.515, -0.236, -0.466, -1.241, -0.354]],
+    #                             [[0.801,  0.072, -2.183,  0.858, -1.504],
+    #                              [-0.09, -1.191, -1.083,  0.78, -0.763],
+    #                              [-1.815, -0.839,  0.457, -1.029,  0.915],
+    #                              [0.708, -0.227,  0.874,  1.563, -2.284]],
+    #                             [[-0.857,  0.309, -1.623,  0.364,  0.097],
+    #                              [-0.876,  1.188, -0.16,  0.888, -0.546],
+    #                              [-1.936, -3.055, -0.535, -1.561, -1.992],
+    #                              [0.316,  0.97,  1.097,  0.234, -0.296]]])
 
-    # underground = a =np.array([
-    #     [-0.814,  0.637, 1.824, -0.563],
-    #     [ 0.559, -0.234, -0.366,  0.07 ],
-    #     [ 0.175, -0.284,  0.026, -0.316],
-    #     [ 0.212,  0.088,  0.304,  0.604],
-    #     [-1.231, 1.558, -0.467, -0.371]])
+    underground = a =np.array([
+        [-0.814,  0.637, 1.824, -0.563],
+        [ 0.559, -0.234, -0.366,  0.07 ],
+        [ 0.175, -0.284,  0.026, -0.316],
+        [ 0.212,  0.088,  0.304,  0.604],
+        [-1.231, 1.558, -0.467, -0.371]])
+    
+    underground = a = np.array([[1,2,3],[4,5,6],[7,8,9]])
     m = Mine(np.array(underground))
     
     print("underground:")
@@ -718,22 +722,25 @@ if __name__ == "__main__":
     
     print("Time")
     print(t1-t0)
+    
+    print("Iterations")
+    print(m.counter)
 
-    print("bb")
-    t0 = time.time()
-    sol_ts = search_bb_dig_plan(m)
-    t1 = time.time()
+    # print("bb")
+    # t0 = time.time()
+    # sol_ts = search_bb_dig_plan(m)
+    # t1 = time.time()
     
-    print("Biggest Payoff")
-    print(sol_ts[0])
+    # print("Biggest Payoff")
+    # print(sol_ts[0])
     
-    print("Best State")
-    print(sol_ts[1])
+    # print("Best State")
+    # print(sol_ts[1])
     
-    print("Best Action List")
-    print(sol_ts[2])
+    # print("Best Action List")
+    # print(sol_ts[2])
     
-    print("Time")
-    print(t1-t0)
+    # print("Time")
+    # print(t1-t0)
 
     # print(sol_ts.state)
