@@ -201,7 +201,7 @@ class Mine(search.Problem):
         self.bfs = []
         self.actionList = []
         self.bestActionList = []
-
+        self.calc_time = 0
 
 
     def surface_neigbhours(self, loc):
@@ -460,6 +460,7 @@ class Mine(search.Problem):
     
     def b(self, s):
         # using the cumsum find the max possible payoff
+        t0 = time.time()
         
         max_payoff = 0
         if isinstance(s,Node):
@@ -487,6 +488,9 @@ class Mine(search.Problem):
                 depth = state[x,y]
                 max_payoff += max(self.padded_sum[x,y,depth:])
                 # print(max_payoff)
+                
+        t1 = time.time()
+        self.calc_time += t1-t0
         return max_payoff
                 
     def goal_test(self, state):
@@ -617,6 +621,7 @@ def search_bb_dig_plan(mine):
         # if mine.goal_test(node.state):
         #     return node
         explored.add(node.state)
+        mine.counter += 1
         
         if mine.payoff(node.state) > mine.biggestPayoff:
             mine.biggestPayoff = mine.payoff(node.state)
@@ -640,6 +645,8 @@ def search_bb_dig_plan(mine):
     print(mine.biggestPayoff)
     print("big state")
     print(mine.bfs)
+    print("calc time:", mine.calc_time)
+    print("big count:", mine.counter)
     return None
 
 
@@ -743,7 +750,10 @@ if __name__ == "__main__":
     print(m.len_y)
     print(m.len_z)
     
-    # sol_ts = search_dp_dig_plan(m)
+    # t0 = time.time()
+    sol_ts = search_dp_dig_plan(m)
+    # t1 = time.time()
+    # print(t1-t0)
     
     t0 = time.time()
     sol_ts = search_bb_dig_plan(m)
