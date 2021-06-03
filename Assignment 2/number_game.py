@@ -506,9 +506,9 @@ def mutate_num(T, Q):
         
     counter_Q = collections.Counter(Q) # some small numbers can be repeated
 
-    raise NotImplementedError()
+    # need to randomly choose a number address, then try to mutate it. Only mutate if the new tree doesn't have more than the count of each number. ie if 2 is in Q twice, then it won't mutate if it tries to put another 2 in
     
-
+    
 # ----------------------------------------------------------------------------
 
 def mutate_op(T):
@@ -528,12 +528,17 @@ def mutate_op(T):
     if isinstance(T, int):
         return T
     
+    print(T)
+    
     La = op_address_list(T)
     a = random.choice(La)  # random address of an op in T
     op_c = get_item(T, a)       # the char of the op
-    # mutant_c : a different op
+    print(a, op_c)
+    mutated_T = np.array(T, dtype=object)
+    mutated_T[a] = op_c
 
-    raise NotImplementedError()
+    print(mutated_T.tolist)
+    return mutated_T.tolist()
     
 
 # ----------------------------------------------------------------------------
