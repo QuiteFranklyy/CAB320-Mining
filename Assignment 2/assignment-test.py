@@ -142,7 +142,7 @@ def polish_str_2_expr_tree(pn_str):
 def main():
     polish = "[*,[-,[*,10,9],7],[+,10,[-,9,8]]]"
     a = polish_str_2_expr_tree(polish)
-    print(a)
+    print(a, type(a))
     
 if __name__ == "__main__":
     main()
