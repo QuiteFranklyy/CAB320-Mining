@@ -561,18 +561,58 @@ def mutate_op(T):
     if isinstance(T, int):
         return T
     
-    print(T)
-    
+    # La is set to the indices of each operator.
     La = op_address_list(T)
-    a = random.choice(La)  # random address of an op in T
     
-    op_c = get_item(T, a)       # the char of the op
-    print(a, op_c)
-    mutated_T = np.array(T, dtype=object)
-    mutated_T[a] = op_c
+    # A randomly chosen index coordinates are chosen from the list of operator
+    # coordinates, La.
+    a = random.choice(La)
+    print("random coordinate", a)
+    print()    
+    
+    # op_c is the operator at the randomly chosen coordinates within T
+    op_c = get_item(T, a)
+    print("operator at random coordinate", op_c)
+    print()
+    # mutant_c : a different op
+    if op_c == '+':
+        new_op = random.choice(['*','-'])
+    if op_c == '-':
+        new_op = random.choice(['*','+'])
+    if op_c == '*':
+        new_op = random.choice(['-','+'])
 
-    print(mutated_T.tolist)
-    return mutated_T.tolist()
+    print("randomly chosen new operator", new_op)
+    print()
+    
+    # a is the index of the operator we are changing
+    
+    # Need to put the new operator into the same place as 'a'
+    def set_element(lst, index, new_op):
+        
+        # Check if the randomly chosen coordinate is the first element of the 
+        # nested list.
+        if len(index) == 1:
+            lst[0] = new_op     # Set the first element of the nested list to 
+            return lst
+        
+        # Check if the current list is a leaf
+        elif isinstance(lst[0], str) and isinstance(lst[1], int) and isinstance(lst[2], int):
+            
+            lst[0] = new_op     # Set the first element of the nested list to
+            
+        # If not a leaf then move to the next node
+        else:
+            if len(index) == 1:
+                # Where recursion happens
+                set_element(lst[index[0]], index, new_op)
+            else:
+                set_element(lst[index[0]], index[1:], new_op)  
+                       
+        return lst
+
+    new = set_element(T, a, new_op)
+    return new
     
 
 # ----------------------------------------------------------------------------
