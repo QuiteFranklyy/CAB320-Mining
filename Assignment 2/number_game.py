@@ -534,10 +534,57 @@ def mutate_num(T, Q):
 
     '''
     
+    print("Q",Q)
+    print("T",T)
+    
     Aop, Lop, Anum, Lnum = decompose(T)    
     mutant_T = copy.deepcopy(T)
-        
+    
     counter_Q = collections.Counter(Q) # some small numbers can be repeated
+    # create a counter for the current count that is in the tree
+    counter_Lnum = collections.Counter(Lnum)
+    
+    # get how many numbers are in the tree
+    num_numbers = len(Anum)
+    # choose the address of one of the numbers
+    mutate_choice = random.randint(0,num_numbers-1)
+    print(mutate_choice)
+    # get the tree address of this number
+    chosen_address = Anum[mutate_choice]
+    old_label = Lnum[mutate_choice]
+    print(chosen_address)    
+    
+    # choose a new random number to assign the variable to
+    chosen_new_number = random.choice(Q)
+    # choose new number if it would violate the constraints of the small numbers
+    while (counter_Q[chosen_new_number] <= counter_Lnum[chosen_new_number]):
+        chosen_new_number = random.choice(Q)
+    
+    def set_element(lst, index, new_num):
+        # Check if the randomly chosen coordinate is the first element of the 
+        # nested list.
+        if len(index) == 1:
+            lst[index[0]] = new_num     # Set the first element of the nested list to 
+            return lst
+        
+        else:
+            set_element(lst[index[0]], index[1:], new_num)  
+                       
+        return lst
+
+
+    print("replace", old_label, "with", chosen_new_number)
+    print(mutant_T)
+    new_tree = set_element(mutant_T, chosen_address, chosen_new_number)
+    print(new_tree)
+    return new_tree
+    
+    
+    
+    
+    
+    
+    
 
     # need to randomly choose a number address, then try to mutate it. Only mutate if the new tree doesn't have more than the count of each number. ie if 2 is in Q twice, then it won't mutate if it tries to put another 2 in
     
@@ -738,4 +785,9 @@ def cross_over(P1, P2, Q):
     
     
     return C1, C2
+
+
+Q = 6,6,7,8,9,9,10,10,11,12,13,14
+T = ["*",["-",["*",10,9],7],["+",10,["-",9,8]]]
+mutate_num(T, Q)
 
