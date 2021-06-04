@@ -590,6 +590,7 @@ def mutate_op(T):
     # Need to put the new operator into the same place as 'a'
     def set_element(lst, index, new_op):
         
+        
         # Check if the randomly chosen coordinate is the first element of the 
         # nested list.
         if len(index) == 1:
@@ -611,8 +612,9 @@ def mutate_op(T):
                        
         return lst
 
-    new = set_element(T, a, new_op)
-    return new
+    new_T = copy.deepcopy(T)
+    new_T = set_element(new_T, a, new_op)
+    return new_T
     
 
 # ----------------------------------------------------------------------------
