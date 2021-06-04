@@ -367,53 +367,20 @@ def op_address_list(T, prefix = None):
     -------
     L
     '''
+    if isinstance(T, int):
+        return []
+    
     if prefix is None:
         prefix = []
+        
+    L = [prefix.copy()+[0]] # first adddress is the op of the root of T
+    left_al = op_address_list(T[1], prefix.copy()+[1])
+    L.extend(left_al)
+    right_al = op_address_list(T[2], prefix.copy()+[2])
+    L.extend(right_al)
+    
+    return L
 
-    if isinstance(T, int):
-        Aop = []
-        Lop = [] 
-        Anum = [prefix]
-        Lnum = [T]
-        return Aop, Lop, Anum, Lnum
-
-    Aop = [prefix.copy()+[0]]
-    Lop = [T[0]]
-    Anum = []
-    Lnum = []
-    
-    # Where recursion happens for the left part of the tree
-    left_Aop, left_Lop, left_Anum, left_Lnum = decompose(T[1], prefix.copy()+[1])
-    
-    # Adding the index location of the opperator to the Aop list
-    Aop.extend(left_Aop)
-    
-    # Adding Opperator from left sub-tree
-    Lop.extend(left_Lop)
-    
-    # Adding the positions of the Numbers from the left tree
-    Anum.extend(left_Anum)
-    
-    # Adding Number from left tree
-    Lnum += left_Lnum
-    
-    
-    # Where recursion happens for the right part of the tree
-    right_Aop, right_Lop, right_Anum, right_Lnum = decompose(T[2], prefix.copy()+[2])
-    
-    # Adding the index lovation of the opperator to the Aop list
-    Aop.extend(right_Aop)
-
-    # Adding Opperator from right sub-tree
-    Lop.extend(right_Lop)
-    
-    # Adding the positions of the Numbers from the right tree
-    Anum.extend(right_Anum)
-    
-    # Adding Number from left tree
-    Lnum += right_Lnum
-    
-    return Aop, Lop, Anum, Lnum
 
 # ----------------------------------------------------------------------------
 
