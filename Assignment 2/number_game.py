@@ -66,8 +66,7 @@ def my_team():
     of triplet of the form (student_number, first_name, last_name)
     
     '''
-#    return [ (1234567, 'Ada', 'Lovelace'), (1234568, 'Grace', 'Hopper'), (1234569, 'Eva', 'Tardos') ]
-    raise NotImplementedError()
+    return [(10272224, 'Michael', 'Novak'), (9952438, 'Sebastian', 'Young'), (10012320, 'Mathew', 'Haywood')]
 
 
 # ----------------------------------------------------------------------------
@@ -566,6 +565,7 @@ def mutate_op(T):
     
     La = op_address_list(T)
     a = random.choice(La)  # random address of an op in T
+    
     op_c = get_item(T, a)       # the char of the op
     print(a, op_c)
     mutated_T = np.array(T, dtype=object)
