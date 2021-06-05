@@ -538,6 +538,7 @@ def mutate_num(T, Q):
     print("T",T)
     
     Aop, Lop, Anum, Lnum = decompose(T)    
+    print('Aop:',Aop,'Lop:',Lop,'Anum:',Anum,'Lnum:',Lnum)
     mutant_T = copy.deepcopy(T)
     
     counter_Q = collections.Counter(Q) # some small numbers can be repeated
@@ -554,11 +555,22 @@ def mutate_num(T, Q):
     old_label = Lnum[mutate_choice]
     print(chosen_address)    
     
+    possible_values = []
+    is_possible = False
+    # make a list of available choices, if no possible choices then just return the tree\
+    for key in Q:
+        if counter_Q[key] - counter_Lnum[key] > 0:
+            possible_values.append(key)
+            is_possible = True
+    
+    if not is_possible:
+        return T
+    
+        
+    print('possible_values:',possible_values)
+    
     # choose a new random number to assign the variable to
-    chosen_new_number = random.choice(Q)
-    # choose new number if it would violate the constraints of the small numbers
-    while (counter_Q[chosen_new_number] <= counter_Lnum[chosen_new_number]):
-        chosen_new_number = random.choice(Q)
+    chosen_new_number = random.choice(possible_values)
     
     def set_element(lst, index, new_num):
         # Check if the randomly chosen coordinate is the first element of the 
@@ -566,6 +578,9 @@ def mutate_num(T, Q):
         if len(index) == 1:
             lst[index[0]] = new_num     # Set the first element of the nested list to 
             return lst
+        
+        elif isinstance(lst,int):
+            lst = new_num
         
         else:
             set_element(lst[index[0]], index[1:], new_num)  
