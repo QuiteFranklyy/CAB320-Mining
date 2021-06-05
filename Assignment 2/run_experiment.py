@@ -73,7 +73,7 @@ population_sizes = [7,10,25,50,100,150,200,400,500,750,1000,1500,2000,3000,4000,
 
 times = []
 
-print('List of drawn numbers is ',Q)
+print('List of drawn numbers is ', Q)
 
 
 # for pop_size in population_sizes:
@@ -106,12 +106,11 @@ for timee in recorded_times:
 print(calculated_max_iterations)
 
 calculated_max_iterations_static = [937.9543231875075, 815.0623523414706, 348.2500434384678, 209.90103172243602, 122.83805030621565, 105.56930891613123, 71.71980506942904, 39.33484772362308, 34.48085622873913, 18.05067184664006, 14.440798142560471, 8.167956046567372, 8.746847854814579, 5.699902417659555, 4.463318329877036, 3.307524170951732, 3.062251593968362, 2.407950667830758, 2.233538320030833, 1.0431334100371168]
-
+calculated_max_iterations_static_int = [937, 815, 348, 209, 122, 105, 71, 39, 34, 18, 14, 8, 8, 5, 4, 3, 3, 2, 2, 1] 
 
 plt.plot(population_sizes,calculated_max_iterations_static,'-r')
 plt.ylabel('Num Iterations')
 plt.xlabel('Population Size')
-
 plt.title('Population Size vs Num Iterations')
 plt.show()
 
@@ -119,8 +118,7 @@ plt.show()
 # how long it takes, final cost, num iterations, 
 average_time = []
 average_final_cost = []
-average_success_rate = []
-average_num = []
+average_success_rate = 0
 
 for population_size_counter in range(len(population_sizes)):
     # array of 30 times, used to average after
@@ -161,3 +159,40 @@ print('Average Success Rate:', average_success_rate)
 # Average Times: [0.6628967766662147, 0.6531969033334463, 0.5700741300010123, 0.6377944933325731, 0.48135464666726574, 0.3262110533340698, 0.3023150233326305, 0.18517460666674498, 0.17564634666584122, 0.27401182666726526, 0.23630423333330933, 0.313867426666305, 0.4102685666667336, 0.5140585366653492, 0.594718189999791, 0.724039553332841, 0.7716039433328358, 0.8955319199997273, 1.050181796666584, 1.8733364733333777]
 # Average Final Cost: [92.3, 10.3, 6.7, 1.7333333333333334, 1.0333333333333334, 0.4666666666666667, 0.23333333333333334, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06666666666666667, 0.0, 0.0]
 # Average Success Rate: [[5], [10], [11], [17], [19], [26], [27], [30], [30], [30], [30], [30], [30], [30], [30], [30], [30], [29], [30], [30]]
+
+AverageTimes = [0.6628967766662147, 0.6531969033334463, 0.5700741300010123, 0.6377944933325731, 0.48135464666726574, 0.3262110533340698, 0.3023150233326305, 0.18517460666674498, 0.17564634666584122, 0.27401182666726526, 0.23630423333330933, 0.313867426666305, 0.4102685666667336, 0.5140585366653492, 0.594718189999791, 0.724039553332841, 0.7716039433328358, 0.8955319199997273, 1.050181796666584, 1.8733364733333777]
+AverageFinalCost = [92.3, 10.3, 6.7, 1.7333333333333334, 1.0333333333333334, 0.4666666666666667, 0.23333333333333334, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06666666666666667, 0.0, 0.0]
+AverageSuccessRate = [5, 10, 11, 17, 19, 26, 27, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 29, 30, 30]
+AverageSuccessRatePercent = [x / 30 * 100 for x in AverageSuccessRate]
+
+# Solution Times
+# plt.plot(population_sizes,AverageTimes,'-r')
+# plt.plot(population_sizes,AverageTimes,'.b')
+# plt.ylabel('Average Solution Time (sec)')
+# plt.xlabel('Population Size')
+# plt.title('Population Size vs Solution Time')
+# plt.show()
+
+# Costs
+# plt.plot(population_sizes,AverageFinalCost,'-r')
+# plt.plot(population_sizes,AverageFinalCost,'.b')
+# plt.ylabel('Average Final Cost')
+# plt.xlabel('Population Size')
+# plt.title('Population Size vs Final Cost')
+# plt.show()
+
+# costs 2
+# plt.plot(population_sizes[1:],AverageFinalCost[1:],'-r')
+# plt.plot(population_sizes[1:],AverageFinalCost[1:],'.b')
+# plt.ylabel('Average Final Cost')
+# plt.xlabel('Population Size')
+# plt.title('Population Size vs Final Cost (10 to 15,000)')
+# plt.show()
+
+# Success Rate
+plt.plot(population_sizes, AverageSuccessRatePercent,'-r')
+plt.plot(population_sizes,AverageSuccessRatePercent,'.b')
+plt.ylabel('Success Rate (%)')
+plt.xlabel('Population Size')
+plt.title('Population Size vs Success Rate')
+plt.show()

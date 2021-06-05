@@ -854,7 +854,7 @@ def evolve_pop(Q, target, **ga_params):
     params = default_GA_params.copy()
     params.update(ga_params)
     
-    print('GA Parameters ', params)
+    # print('GA Parameters ', params)
     
     mutation_probability = params['mutation_probability']
     pop_size = params['population_size']
@@ -873,11 +873,11 @@ def evolve_pop(Q, target, **ga_params):
     pop.sort(key=lambda x:x[0])
     
     # Report
-    print('\n'+'-'*40+'\n')
-    print("The best individual of the initial population has a cost of {}".format(pop[0][0]))
-    print("The best individual is \n")
-    display_tree(pop[0][1])
-    print('\n')
+    # print('\n'+'-'*40+'\n')
+    # print("The best individual of the initial population has a cost of {}".format(pop[0][0]))
+    # print("The best individual is \n")
+    # display_tree(pop[0][1])
+    # print('\n')
     # ------------- Loop on generations ------------------------
     
     # Rank of last individual in the current population
@@ -938,7 +938,7 @@ def evolve_pop(Q, target, **ga_params):
         pop = new_pop[:pop_size]
         
         # Report some stats
-        print(f"\nAfter {g+1} generations, the best individual has a cost of {pop[0][0]}\n")
+        # print(f"\nAfter {g+1} generations, the best individual has a cost of {pop[0][0]}\n")
         
         if pop[0][0] == 0:
             # found a solution!
@@ -949,40 +949,123 @@ def evolve_pop(Q, target, **ga_params):
 
 
 
-## ---------------------------- MAIN BLOCK
-# Q = [100, 50, 3, 3, 10, 75]
-# target = 322
-
-# Q = [25,10,2,9,8,7]
-# target = 449
-
-
-# ## pick 20 population sizes
-# population_sizes = [x for x in range(100,2001, 100)]
-population_sizes = [5,10,25,50,75,100,150,200,300,400,500,600,700,800,900,1000,1500,2000,3000,15000]
-
-
-
-
-# Q.sort()
-
-# print('List of drawn numbers is ',Q)
-# tic = time.perf_counter()
+## ---------------------------- MAIN BLOCK -------------------------------------
+def run_experiments():
+    # generate the random game requirements
+    Q = []
+    target = []
+    population_sizes = [7,10,25,50,100,150,200,400,500,750,1000,1500,2000,3000,4000,5000,6000,7000,8000,15000]
+    print('generating games',end="")
+    for x in range(30):
+        print('.',end = "")
+        # these are our chosen population sizes
+        Q.append(pick_numbers())
+        # sort the game numbers
+        Q[x].sort()
+        target.append(np.random.randint(1,1000))
+        
+    print('\nGames:')
+    for x in range(30):
+        print('Game:',x,'Target:',target[x],'Numbers:',Q[x])
+        
+        
+        
+    ## calculate iterations vs population size graph    
+    times = []
+    calculated_max_iterations = []
+    print('\ncalculating iterations',end="")
+    for pop_size in population_sizes:
+        print('.',end = "")
+        tic = time.perf_counter()
+        v, T = evolve_pop(Q[0], target[0], 
+                      max_num_iteration = 1,
+                      population_size = pop_size,
+                      parents_portion = 0.3)
+        toc = time.perf_counter()
+        times.append(toc-tic)
+        
+        calculated_max_iterations.append(2/(toc-tic))
+        
+    print('\nTimes for one generation:',times)
+    print('\nIterations for each population:', calculated_max_iterations)
     
-
-# v, T = evolve_pop(Q, target, 
-#                   max_num_iteration = 1000,
-#                   population_size = 100,
-#                   parents_portion = 0.3)
-
-# toc = time.perf_counter()
-# print(f"time taken: {toc - tic:0.4f} seconds")
-
-
-## run each population size with 1 game 30 times
-
-
-## calculate success rate
-
-
-## calculate maximum number of generations that are under 2 seconds
+    # our calculated values that were used in the report
+    calculated_max_iterations_static = [937, 815, 348, 209, 122, 105, 71, 39, 34, 18, 14, 8, 8, 5, 4, 3, 3, 2, 2, 1]
+    
+    plt.plot(population_sizes,calculated_max_iterations,'-r')
+    plt.ylabel('Num Iterations')
+    plt.xlabel('Population Size')
+    
+    plt.title('Random Game: Population Size vs Num Iterations')
+    plt.show()
+    
+    
+    
+    ## Run 30 different games for each population size, using the calculated_max_iterations and population_sizes
+    # how long it takes, final cost, num iterations, 
+    average_time = []
+    average_final_cost = []
+    average_success_rate = []
+    
+    for population_size_counter in range(len(population_sizes)):
+        # array of 30 times, used to average after
+        times = []
+        final_costs = []
+        success_rates = 0
+        for x in range(30):
+            tic = time.perf_counter()
+            v, T = evolve_pop(Q[x], target[x], 
+                          max_num_iteration =  int(calculated_max_iterations[population_size_counter]),
+                          population_size = population_sizes[population_size_counter],
+                          parents_portion = 0.3)
+            toc = time.perf_counter()
+            times.append(toc-tic)
+            final_costs.append(v)
+            if v == 0:
+                success_rates += 1
+            
+            # print(f"time taken: {toc - tic:0.4f} seconds")
+            # print('----------------------------')
+            # if v==0:
+            #     print("\n***** Perfect Score!! *****")
+            # print(f'\ntarget {target} , tree value {eval_tree(T)}\n')
+            # display_tree(T)
+        
+        # calculate averages and put them into the total arrays
+        average_time.append(sum(times)/len(times))
+        average_final_cost.append(sum(final_costs)/len(final_costs))
+        average_success_rate.append(success_rates)
+        
+    print('Average Times:',average_time)
+    print('Average Final Cost:',average_final_cost)
+    print('Average Success Rate:', average_success_rate)
+    
+    average_success_rate_percent = [x / 30 * 100 for x in average_success_rate]
+    
+    
+    # Solution Times
+    plt.plot(population_sizes,average_time,'-r')
+    plt.plot(population_sizes,average_time,'.b')
+    plt.ylabel('Average Solution Time (sec)')
+    plt.xlabel('Population Size')
+    plt.title('Population Size vs Solution Time')
+    plt.show()
+    
+    # Costs
+    plt.plot(population_sizes,average_final_cost,'-r')
+    plt.plot(population_sizes,average_final_cost,'.b')
+    plt.ylabel('Average Final Cost')
+    plt.xlabel('Population Size')
+    plt.title('Population Size vs Final Cost')
+    plt.show()
+    
+    # Success Rate
+    plt.plot(population_sizes, average_success_rate_percent,'-r')
+    plt.plot(population_sizes,average_success_rate_percent,'.b')
+    plt.ylabel('Success Rate (%)')
+    plt.xlabel('Population Size')
+    plt.title('Population Size vs Success Rate')
+    plt.show()
+    
+## UNCOMMENT 
+# run_experiments()
