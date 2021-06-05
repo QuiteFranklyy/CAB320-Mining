@@ -534,11 +534,11 @@ def mutate_num(T, Q):
 
     '''
     
-    print("Q",Q)
-    print("T",T)
+    # print("Q",Q)
+    # print("T",T)
     
     Aop, Lop, Anum, Lnum = decompose(T)    
-    print('Aop:',Aop,'Lop:',Lop,'Anum:',Anum,'Lnum:',Lnum)
+    # print('Aop:',Aop,'Lop:',Lop,'Anum:',Anum,'Lnum:',Lnum)
     mutant_T = copy.deepcopy(T)
     
     counter_Q = collections.Counter(Q) # some small numbers can be repeated
@@ -549,11 +549,11 @@ def mutate_num(T, Q):
     num_numbers = len(Anum)
     # choose the address of one of the numbers
     mutate_choice = random.randint(0,num_numbers-1)
-    print(mutate_choice)
+    # print(mutate_choice)
     # get the tree address of this number
     chosen_address = Anum[mutate_choice]
     old_label = Lnum[mutate_choice]
-    print(chosen_address)    
+    # print(chosen_address)    
     
     possible_values = []
     is_possible = False
@@ -567,7 +567,7 @@ def mutate_num(T, Q):
         return T
     
         
-    print('possible_values:',possible_values)
+    # print('possible_values:',possible_values)
     
     # choose a new random number to assign the variable to
     chosen_new_number = random.choice(possible_values)
@@ -588,10 +588,10 @@ def mutate_num(T, Q):
         return lst
 
 
-    print("replace", old_label, "with", chosen_new_number)
-    print(mutant_T)
+    # print("replace", old_label, "with", chosen_new_number)
+    # print(mutant_T)
     new_tree = set_element(mutant_T, chosen_address, chosen_new_number)
-    print(new_tree)
+    # print(new_tree)
     return new_tree
     
     
@@ -629,13 +629,11 @@ def mutate_op(T):
     # A randomly chosen index coordinates are chosen from the list of operator
     # coordinates, La.
     a = random.choice(La)
-    print("random coordinate", a)
-    print()    
+    # print("random coordinate", a)
     
     # op_c is the operator at the randomly chosen coordinates within T
     op_c = get_item(T, a)
-    print("operator at random coordinate", op_c)
-    print()
+    # print("\noperator at random coordinate", op_c)
     # mutant_c : a different op
     if op_c == '+':
         new_op = random.choice(['*','-'])
@@ -644,8 +642,7 @@ def mutate_op(T):
     if op_c == '*':
         new_op = random.choice(['-','+'])
 
-    print("randomly chosen new operator", new_op)
-    print()
+    # print("\nrandomly chosen new operator", new_op)
     
     # a is the index of the operator we are changing
     
@@ -772,9 +769,9 @@ def cross_over(P1, P2, Q):
     aS2 = Aop_2[i2][:d2]
     S2 = get_item(C2, aS2)
 
-    print(' \nDEBUG -------- S1 and S2 ----------') # DEBUG
-    print(S1)
-    print(S2,'\n')
+    # print(' \nDEBUG -------- S1 and S2 ----------') # DEBUG
+    # print(S1)
+    # print(S2,'\n')
 
 
     # count the numbers (their occurences) in the candidate child C1
