@@ -63,9 +63,8 @@ target = np.random.randint(1,1000)
 # Q = [50,75,9,10,2,2]
 # target = 533
 
-Q = [100,25,7,5,3,1]
-target = 728
-
+# Q = [100,25,7,5,3,1]
+# target = 69
 Q.sort()
 
 print('List of drawn numbers is ',Q)
