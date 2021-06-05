@@ -45,12 +45,18 @@ L&N game.
 
 
 
+# from genetic_algorithm import evolve_pop
+
 import numpy as np
 import random
 
 import copy # for deepcopy
 
 import collections
+
+import time
+
+import matplotlib.pyplot as plt
 
 
 SMALL_NUMBERS = tuple(range(1,11))
@@ -810,7 +816,173 @@ def cross_over(P1, P2, Q):
     return C1, C2
 
 
-# Q = 6,6,7,8,9,9,10,10,11,12,13,14
-# T = ["*",["-",["*",10,9],7],["+",10,["-",9,8]]]
-# mutate_num(T, Q)
 
+## --------------- Evolve Function ------------------
+default_GA_params = {
+    'max_num_iteration': 50,
+    'population_size':100,
+    'mutation_probability':0.1,
+    'elit_ratio': 0.05,
+    'parents_portion': 0.3}
+
+
+def evolve_pop(Q, target, **ga_params):
+    '''
+    
+    Evolve a population of expression trees for the game
+    Letters and Numbers given a target value and a set of numbers.
+    
+
+    Parameters
+    ----------
+    Q : list of integers
+        Integers that were drawn by the game host
+    
+    target: integer
+           target value of the game
+        
+    params : dictionary, optional
+        The default is GA_params.
+        Dictionary of parameters for the genetic algorithm
+
+    Returns
+    -------
+    v, T: the best expression tree found and its value
+
+    '''
+    
+    params = default_GA_params.copy()
+    params.update(ga_params)
+    
+    print('GA Parameters ', params)
+    
+    mutation_probability = params['mutation_probability']
+    pop_size = params['population_size']
+    
+    # ------------- Initialize Population ------------------------
+    
+    pop = [] # list of pairs (cost, individuals)
+    
+    for _ in range(pop_size):
+        T, _ = bottom_up_creator(Q)
+        cost = abs(target-eval_tree(T))
+        pop.append((cost,T))
+    
+    # Sort the initial population
+    # print(pop) # debug
+    pop.sort(key=lambda x:x[0])
+    
+    # Report
+    print('\n'+'-'*40+'\n')
+    print("The best individual of the initial population has a cost of {}".format(pop[0][0]))
+    print("The best individual is \n")
+    display_tree(pop[0][1])
+    print('\n')
+    # ------------- Loop on generations ------------------------
+    
+    # Rank of last individual in the current population
+    # allowed to breed.
+    rank_parent = int(params['parents_portion'] * 
+                                      params['population_size'])
+    
+    # Rank of the last elite individual. The elite is copied unchanged 
+    # into the next generation.
+    rank_elite = max(1, int(params['elit_ratio'] *
+                                      params['population_size']))
+ 
+    for g in range(params['max_num_iteration']):
+        
+        # Generate children
+        children = []
+        while len(children) < pop_size:
+            # pick two parents
+            (_, P1), (_, P2) = random.sample(pop[:rank_parent], 2)
+            # skip cases where one of the parents is trivial (a number)
+            if isinstance(P1, list) and isinstance(P2, list):
+                C1, C2 = cross_over(P1, P2, Q)
+            else:
+                # if one of the parents is trivial, just compute mutants
+                C1 = mutate_num(P1,Q)
+                C2 = mutate_num(P2,Q)
+            # Compute the costs of the children
+            cost_1 =  abs(target-eval_tree(C1))
+            cost_2 =  abs(target-eval_tree(C2))
+            children.extend([ (cost_1,C1), (cost_2,C2) ])
+             
+        new_pop = pop[rank_elite:]+children 
+        
+        # Mutate some individuals (keep aside the elite for now)
+        # Pick randomly the indices of the mutants
+        mutant_indices = random.sample(range(len(new_pop)), 
+                                       int(mutation_probability*pop_size))      
+        # i: index of a mutant in new_pop
+        for i in mutant_indices:
+            # Choose a mutation by flipping a coin
+            Ti = new_pop[i][1]  #  new_pop[i][0]  is the cost of Ti
+            # Flip a coin to decide whether to mutate an op or a number
+            # If Ti is trivial, we can only use mutate_num
+            if isinstance(Ti, int) or random.choice((False, True)): 
+                Mi = mutate_num(Ti, Q)
+            else:
+                Mi = mutate_op(Ti)
+            # update the mutated entry
+            new_pop[i] = (abs(target-eval_tree(Mi)), Mi)
+                
+        # add without any chance of mutation the elite
+        new_pop.extend(pop[:rank_elite])
+        
+        # sort
+        new_pop.sort(key=lambda x:x[0])
+        
+        # keep only pop_size individuals
+        pop = new_pop[:pop_size]
+        
+        # Report some stats
+        print(f"\nAfter {g+1} generations, the best individual has a cost of {pop[0][0]}\n")
+        
+        if pop[0][0] == 0:
+            # found a solution!
+            break
+
+      # return best found
+    return pop[0]
+
+
+
+## ---------------------------- MAIN BLOCK
+# Q = [100, 50, 3, 3, 10, 75]
+# target = 322
+
+# Q = [25,10,2,9,8,7]
+# target = 449
+
+
+# ## pick 20 population sizes
+# population_sizes = [x for x in range(100,2001, 100)]
+population_sizes = [5,10,25,50,75,100,150,200,300,400,500,600,700,800,900,1000,1500,2000,3000,15000]
+
+
+
+
+# Q.sort()
+
+# print('List of drawn numbers is ',Q)
+# tic = time.perf_counter()
+    
+
+# v, T = evolve_pop(Q, target, 
+#                   max_num_iteration = 1000,
+#                   population_size = 100,
+#                   parents_portion = 0.3)
+
+# toc = time.perf_counter()
+# print(f"time taken: {toc - tic:0.4f} seconds")
+
+
+## run each population size with 1 game 30 times
+
+
+## calculate success rate
+
+
+## calculate maximum number of generations that are under 2 seconds
