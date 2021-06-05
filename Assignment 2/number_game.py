@@ -753,11 +753,13 @@ def cross_over(P1, P2, Q):
     S1 = get_item(C1, aS1)
 
     # ABOUT 3 LINES DELETED
-    raise NotImplementedError()
+    d2 = len(Aop_2[i2])-1
+    aS2 = Aop_2[i2][:d2]
+    S2 = get_item(C2, aS2)
 
-    # print(' DEBUG -------- S1 and S2 ----------') # DEBUG
-    # print(S1)
-    # print(S2)
+    print(' \nDEBUG -------- S1 and S2 ----------') # DEBUG
+    print(S1)
+    print(S2,'\n')
 
 
     # count the numbers (their occurences) in the candidate child C1
@@ -780,14 +782,23 @@ def cross_over(P1, P2, Q):
     
     # Test whether child C2 is ok
     
-    # ABOUT 10 LINES DELETED
-    raise NotImplementedError()
+    # ABOUT 10 LINES DELETED    
+    if all(counter_Q[v] >= counter_2[v] for v in counter_Q):
+        C2 = replace_subtree(C2, aS2, S1)
+    else:
+        available_nums = counter_Q.copy()
+        available_nums.subtract(
+            collections.Counter(nums_C2mS2)
+            )
+        R2, _ = bottom_up_creator(list(available_nums.elements()))
+        C2 = replace_subtree(C2, aS2, R2)
+    
     
     
     return C1, C2
 
 
-Q = 6,6,7,8,9,9,10,10,11,12,13,14
-T = ["*",["-",["*",10,9],7],["+",10,["-",9,8]]]
-mutate_num(T, Q)
+# Q = 6,6,7,8,9,9,10,10,11,12,13,14
+# T = ["*",["-",["*",10,9],7],["+",10,["-",9,8]]]
+# mutate_num(T, Q)
 
